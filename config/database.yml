@@ -1,0 +1,27 @@
+# SQLite. Versions 3.8.0 and up are supported.
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem "sqlite3"
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # username: <%= ENV.fetch("PGUSER") { "tacot_bielle_v3" } %>
+  # password: <%= ENV.fetch("PGPASSWORD") {""} %>
+  # host: <%= ENV.fetch("PGHOST") { "localhost" } %>
+
+development:
+  <<: *default
+  database: tacot_bielle_v3_development
+
+test:
+  <<: *default
+  database: tacot_bielle_v3_test
+
+production:
+  <<: *default
+  database: tacot_bielle_v3_production
+  # username: tacot_bielle_v3 #ajout benoit, on peut le changer
+  # password: <%= ENV["PGPASSWORDDEV"] %>
