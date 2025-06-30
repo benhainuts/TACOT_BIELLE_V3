@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  car_id: one
+  item_name: MyString
+  to_do_every_x_km: 1
+  to_do_every_x_years: 1
+  one_shot_operation: false
+
+two:
+  car_id: two
+  item_name: MyString
+  to_do_every_x_km: 1
+  to_do_every_x_years: 1
+  one_shot_operation: false

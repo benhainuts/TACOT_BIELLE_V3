@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  number_plate: MyString
+  first_registration_date: 2025-06-30
+  make: MyString
+  model: MyString
+  energy: MyString
+  horsepower: 1
+  mileage: 1
+  last_technical_control_date: 2025-06-30
+  last_maintenance_operation_made_on: 2025-06-30
+  last_maintenance_operation_mileage: MyString
+  created_on: 2025-06-30
+  modified_on: 2025-06-30
+  user_id: one
+
+two:
+  number_plate: MyString
+  first_registration_date: 2025-06-30
+  make: MyString
+  model: MyString
+  energy: MyString
+  horsepower: 1
+  mileage: 1
+  last_technical_control_date: 2025-06-30
+  last_maintenance_operation_made_on: 2025-06-30
+  last_maintenance_operation_mileage: MyString
+  created_on: 2025-06-30
+  modified_on: 2025-06-30
+  user_id: two

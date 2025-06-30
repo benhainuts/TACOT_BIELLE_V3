@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2025-06-30
+  mileage: 1
+  car_id: one
+  garage_id: one
+  cost: 1
+  comments: MyText
+
+two:
+  date: 2025-06-30
+  mileage: 1
+  car_id: two
+  garage_id: two
+  cost: 1
+  comments: MyText
