@@ -1,4 +1,4 @@
 class GarageStop < ApplicationRecord
-  belongs_to :car_id
-  belongs_to :garage_id
+  belongs_to :car
+  belongs_to :garage
 end
