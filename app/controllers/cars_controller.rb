@@ -1,5 +1,5 @@
 class CarsController < ApplicationController
-before_action :set_car, only: [:show, :edit, :update, :create]
+before_action :set_car, only: [:show, :edit, :update]
 # before_action :car_params, only: [:create]
 
   def index
@@ -12,9 +12,10 @@ before_action :set_car, only: [:show, :edit, :update, :create]
 
   def create
     # puts car_params.inspect
+    raise
     @car = Car.new(car_params)
     if @car.save
-      raise
+      # raise
       redirect_to cars_path
     else
        render :new, status: :unprocessable_entity

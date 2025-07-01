@@ -20,20 +20,20 @@
   <input type="text" name="car[model]" id="model" value="<%= car&.model %>" <%= 'readonly' if is_readonly %>><br>
 
   <div>
-    <p for="car[energy]">Energie</p>
-    <input type="radio" id="Essence" name="car[energy]" value="Essence">
+    <p for="energy">Energie</p>
+    <input type="radio" id="Essence" name="energy" value="Essence">
     <label for="Essence">Essence</label><br>
-    <input type="radio" id="Diesel" name="car[energy]" value="Diesel">
+    <input type="radio" id="Diesel" name="energy" value="Diesel">
     <label for="Diesel">Diesel</label><br>
-    <input type="radio" id="Electrique" name="car[energy]" value="Electrique">
+    <input type="radio" id="Electrique" name="energy" value="Electrique">
     <label for="Electrique">Electrique</label><br>
-    <input type="radio" id="Hybride non-rechargeable" name="car[energy]" value="Hybride non-rechargeable">
+    <input type="radio" id="Hybride non-rechargeable" name="energy" value="Hybride non-rechargeable">
     <label for="Hybride non-rechargeable">Hybride non-rechargeable</label>
-    <input type="radio" id="Hybride rechargeable" name="car[energy]" value="Hybride rechargeable">
+    <input type="radio" id="Hybride rechargeable" name="energy" value="Hybride rechargeable">
     <label for="Hybride rechargeable">Hybride rechargeable</label>
-    <input type="radio" id="Bicarburation essence-éthanol" name="car[energy]" value="Bicarburation essence-éthanol">
+    <input type="radio" id="Bicarburation essence-éthanol" name="energy" value="Bicarburation essence-éthanol">
     <label for="Bicarburation essence-éthanol">Bicarburation essence-éthanol</label>
-    <input type="radio" id="Bicarburation essence GPL" name="car[energy]" value="Bicarburation essence GPL">
+    <input type="radio" id="Bicarburation essence GPL" name="energy" value="Bicarburation essence GPL">
     <label for="Bicarburation essence GPL">Bicarburation essence GPL</label>
 
     <input type="text" name="car[energy]" id="energy" value="<%= car&.energy %>" <%= 'readonly' if is_readonly %>><br>
@@ -68,7 +68,7 @@
     <input type="checkbox" id="fall_holidays" name="car[use]" value="fall_holidays">
     <label for="fall_holidays">Vacances d'automne</label><br>
 
-    <input type="text" name="car[use]" id="use" value="<%= car&.use %>" <%= "readonly" if is_readonly %>><br>
+    <%# <input type="text" name="car[use]" id="use" value="<%= car&.use %>" <%= "readonly" if is_readonly %>><br> %>
   </div>
 
   <label for="last_technical_control_date">Date du dernier Contrôle Technique</label>
