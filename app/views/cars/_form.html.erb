@@ -1,0 +1,22 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="user_id">Utilisateur</label>
+  <input type="text" name="user_id" id="user_id" value="<%= car&.user_id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="number_plate">N° immatriculation</label>
+  <input type="text" name="number_plate" id="number_plate" value="<%= car&.number_plate %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="make">Marque</label>
+  <input type="text" name="make" id="make" value="<%= car&.make %>" <%= 'readonly' if is_readonly %>><br>
+
+  <!-- Tu continues à faire ça pour les autres champs... -->
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

@@ -1,13 +1,13 @@
-<h1>Cars#new</h1>
-<p>Find me in app/views/cars/new.html.erb</p>
+
+<p>fiche de <%=@car.make%> <%=@car.model%> - <%=@car.number_plate%></p>
 
 <form action="/cars" name="car" method="post">
 
   <label for="user_id">Utilisateur</label>
-  <input type="text" name="user_id" id="user_id"><br>
+  <p id="user_id"><%=@car.user_id%></p><br>
 
   <label for="number_plate">N° immatriculation</label>
-  <input type="text" name="number_plate" id="number_plate"><br>
+  <p id="number_plate"><%=@car.number_plate%></p><br>
 
   <label for="make">Marque</label>
   <input type="text" name="make" id="make"><br>
