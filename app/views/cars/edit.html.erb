@@ -1,2 +1,8 @@
 <h1>Cars#edit</h1>
 <p>Find me in app/views/cars/edit.html.erb</p>
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  form_action: car_path(@car),
+  form_method: "patch"
+} %>
