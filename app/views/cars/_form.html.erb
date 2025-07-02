@@ -21,22 +21,10 @@
 
   <div>
     <p for="energy">Energie</p>
-    <input type="radio" id="Essence" name="energy" value="Essence">
-    <label for="Essence">Essence</label><br>
-    <input type="radio" id="Diesel" name="energy" value="Diesel">
-    <label for="Diesel">Diesel</label><br>
-    <input type="radio" id="Electrique" name="energy" value="Electrique">
-    <label for="Electrique">Electrique</label><br>
-    <input type="radio" id="Hybride non-rechargeable" name="energy" value="Hybride non-rechargeable">
-    <label for="Hybride non-rechargeable">Hybride non-rechargeable</label>
-    <input type="radio" id="Hybride rechargeable" name="energy" value="Hybride rechargeable">
-    <label for="Hybride rechargeable">Hybride rechargeable</label>
-    <input type="radio" id="Bicarburation essence-éthanol" name="energy" value="Bicarburation essence-éthanol">
-    <label for="Bicarburation essence-éthanol">Bicarburation essence-éthanol</label>
-    <input type="radio" id="Bicarburation essence GPL" name="energy" value="Bicarburation essence GPL">
-    <label for="Bicarburation essence GPL">Bicarburation essence GPL</label>
-
-    <input type="text" name="car[energy]" id="energy" value="<%= car&.energy %>" <%= 'readonly' if is_readonly %>><br>
+    <% Car::ENERGIE.each do |e| %>
+      <input type="radio" id=<%=e[:id]%> name="car[energy]" value=<%=e[:label]%>>
+      <label for=<%=e[:id]%>><%=e[:label]%></label><br>
+    <%end%>
   </div>
 
   <label for="horsepower">Puissance</label>
@@ -52,23 +40,12 @@
   <input type="number" name="car[mileage_per_year]" id="mileage_per_year" value="<%= car&.mileage_per_year %>" <%= 'readonly' if is_readonly %>><br>
 
   <div>
-    <p for="car[use]">Utilisation</p>
-    <input type="checkbox" id="commute" name="car[use]" value="commute">
-    <label for="commute">Domicile-travail</label><br>
-    <input type="checkbox" id="use_for_work" name="car[use]" value="use_for_work">
-    <label for="use_for_work">Outil de travail</label><br>
-    <input type="checkbox" id="weekend" name="car[use]" value="weekend">
-    <label for="weekend">Week-ends</label><br>
-    <input type="checkbox" id="winter_holidays" name="car[use]" value="winter_holidays">
-    <label for="winter_holidays">Vacances d'hiver</label><br>
-    <input type="checkbox" id="spring_holidays" name="car[use]" value="spring_holidays">
-    <label for="spring_holidays">Vacances de printemps</label><br>
-    <input type="checkbox" id="summer_holidays" name="car[use]" value="summer_holidays">
-    <label for="summer_holidays">Vacances d'ete</label><br>
-    <input type="checkbox" id="fall_holidays" name="car[use]" value="fall_holidays">
-    <label for="fall_holidays">Vacances d'automne</label><br>
-
-    <%# <input type="text" name="car[use]" id="use" value="<%= car&.use %>" <%= "readonly" if is_readonly %>><br> %>
+    <p for="use">Utilisation</p>
+    <% Car::USES.each do |u| %>
+      <input type="checkbox" id=<%=u[:id]%> name="car[use][<%=u[:id]%>]" value=<%=u[:label]%>>
+      <label for=<%=u[:id]%>><%=u[:label]%></label><br>
+    <%end%>
+    <br><br>
   </div>
 
   <label for="last_technical_control_date">Date du dernier Contrôle Technique</label>
