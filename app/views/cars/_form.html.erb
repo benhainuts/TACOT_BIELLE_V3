@@ -42,9 +42,13 @@
   <div>
     <p for="use">Utilisation</p>
     <% Car::USES.each do |u| %>
-      <input type="checkbox" id=<%=u[:id]%> name="car[use][<%=u[:id]%>]" value=<%=u[:label]%>>
-      <label for=<%=u[:id]%>><%=u[:label]%></label><br>
-    <%end%>
+      <%= check_box_tag "car[use][]", u[:id], @car&.use&.include?(u[:id]),
+        id: u[:id],
+        disabled: is_readonly,
+        class: (is_readonly ? 'readonly' : '')
+      %>
+      <%= label_tag u[:id], u[:label] %><br>
+    <% end %>
     <br><br>
   </div>
 

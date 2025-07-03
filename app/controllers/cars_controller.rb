@@ -14,8 +14,8 @@ before_action :set_car, only: [:show, :edit, :update]
     # puts car_params.inspect
 
     @car = Car.new(car_params)
-    @car.use = params[:car][:use].to_s
-    raise
+    # @car.use = params[:car][:use].to_s
+    # raise
     if @car.save
       # raise
       redirect_to cars_path
@@ -34,6 +34,7 @@ before_action :set_car, only: [:show, :edit, :update]
   def update
     # raise
     @car.update(car_params)
+    # @car.use = params[:car][:use].to_s
     # if @car.patch
     # raise
       redirect_to car_path(@car)
@@ -52,7 +53,7 @@ before_action :set_car, only: [:show, :edit, :update]
   end
 
   def car_params
-    params.require(:car).permit(:user_id, :number_plate, :make, :model, :energy, :horsepower, :first_registration_date, :mileage, :mileage_per_year, :use, :last_technical_control_date, :last_maintenance_operation_made_on, :last_maintenance_operation_mileage, :energy, :use)
+    params.require(:car).permit(:user_id, :number_plate, :make, :model, :energy, :horsepower, :first_registration_date, :mileage, :mileage_per_year, :use, :last_technical_control_date, :last_maintenance_operation_made_on, :last_maintenance_operation_mileage, :energy, use: [])
   end
 
 end
