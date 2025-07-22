@@ -1,0 +1,8 @@
+stop_item new
+
+<%= render partial: 'form', locals: {
+  garage_stop: @garage_stop,
+  stop_item: @stop_item,
+  form_action: car_garage_stop_stop_items_path(@car, @garage_stop),
+  form_method: "post"
+} %>

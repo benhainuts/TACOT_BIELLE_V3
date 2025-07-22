@@ -1,0 +1,27 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="garage_stop_id">Arrét au garage</label>
+  <input type="text" name="stop_item[garage_stop_id]" id="garage_stop_id" value="<%= @garage_stop.id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="maintenance_item_id">Opération</label>
+  <input type="text" name="stop_item[maintenance_item_id]" id="maintenance_item_id" value="<%= stop_item&.maintenance_item_id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="price">price</label>
+  <input type="number" name="stop_item[price]" id="price" value="<%=stop_item&.price %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="next_date_milestone">Kilométrage</label>
+  <input type="date" name="stop_item[next_date_milestone]" id="next_date_milestone" value="<%=stop_item&.next_date_milestone %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="next_km_milestone">Cout</label>
+  <input type="number" name="stop_item[next_km_milestone]" id="next_km_milestone" value="<%=stop_item&.next_km_milestone %>" <%= 'readonly' if is_readonly %>>
+  <span> km</span><br>
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

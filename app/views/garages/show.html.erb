@@ -1,0 +1,11 @@
+
+show garage
+
+<%= render partial: 'form', locals: {
+  garage: @garage,
+  form_action: "#",
+  form_method: "get",
+  readonly: true
+} %>
+
+<a href="<%=edit_garage_path(@garage)%>">Mise à jour</a>

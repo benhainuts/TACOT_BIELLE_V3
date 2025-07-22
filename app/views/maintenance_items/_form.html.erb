@@ -1,0 +1,28 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="car_id">Voiture</label>
+  <input type="text" name="maintenance_item[car_id]" id="car_id" value="<%= @car.id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="item_name">Opération</label>
+  <input type="text" name="maintenance_item[item_name]" id="item_name" value="<%=maintenance_item&.item_name %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="one_shot_operation">Operation unique</label>
+  <input type="checkbox" name="maintenance_item[one_shot_operation]" id="one_shot_operation" value="<%=maintenance_item&.one_shot_operation %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="to_do_every_x_km">A faire tous les</label>
+  <input type="text" name="maintenance_item[to_do_every_x_km]" id="to_do_every_x_km" value="<%=maintenance_item&.to_do_every_x_km %>" <%= 'readonly' if is_readonly %>>
+  <span> km</span><br>
+
+  <label for="to_do_every_x_years">A faire tous les</label>
+  <input type="text" name="maintenance_item[to_do_every_x_years]" id="to_do_every_x_years" value="<%=maintenance_item&.to_do_every_x_years %>" <%= 'readonly' if is_readonly %>>
+  <span> an</span><br>
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

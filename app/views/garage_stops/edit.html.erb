@@ -1,0 +1,8 @@
+garage_stop edit
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  garage_stop: @garage_stop,
+  form_action: car_garage_stop_path(@car, @garage_stop),
+  form_method: "patch"
+} %>

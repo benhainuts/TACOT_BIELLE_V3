@@ -1,0 +1,31 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="car_id">Voiture</label>
+  <input type="text" name="garage_stop[car_id]" id="car_id" value="<%= @car.id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="garage_id">Garage</label>
+  <input type="text" name="garage_stop[garage_id]" id="garage_id" value="<%= garage_stop&.garage_id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="date">Date</label>
+  <input type="date" name="garage_stop[date]" id="date" value="<%=garage_stop&.date %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="mileage">Kilométrage</label>
+  <input type="number" name="garage_stop[mileage]" id="mileage" value="<%=garage_stop&.mileage %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="cost">Cout</label>
+  <input type="number" name="garage_stop[cost]" id="cost" value="<%=garage_stop&.cost %>" <%= 'readonly' if is_readonly %>>
+  <span> km</span><br>
+
+  <label for="comments">Remarques</label>
+  <input type="text" name="garage_stop[comments]" id="comments" value="<%=garage_stop&.comments %>" <%= 'readonly' if is_readonly %>>
+  <span> an</span><br>
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

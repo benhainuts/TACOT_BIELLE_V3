@@ -1,0 +1,17 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="name">Nom du garage</label>
+  <input type="text" name="garage[name]" id="name" value="<%= @garage.name %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="address">Adresse</label>
+  <input type="text" name="garage[address]" id="address" value="<%= @garage.address %>" <%= 'readonly' if is_readonly %>><br>
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

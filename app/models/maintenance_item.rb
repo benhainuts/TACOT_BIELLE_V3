@@ -1,3 +1,3 @@
 class MaintenanceItem < ApplicationRecord
-  belongs_to :car_id
+  belongs_to :car
 end

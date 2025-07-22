@@ -1,0 +1,10 @@
+<h1>garages#index</h1>
+<p>Find me in app/views/garages/index.html.erb</p>
+
+<p><%=link_to "nouveau" ,new_garage_path%></p>
+
+<ul>
+ <%@garages.each do |garage|%>
+  <li><%=link_to garage.name ,garage_path(garage)%></li>
+  <%end%>
+</ul>

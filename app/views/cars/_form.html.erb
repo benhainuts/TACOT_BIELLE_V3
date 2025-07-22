@@ -1,0 +1,65 @@
+<% is_readonly = local_assigns[:readonly] || false %>
+
+<form action="<%= form_action %>" method="<%= form_method %>">
+  <% if form_method.to_s.downcase != "post" %>
+    <input type="hidden" name="_method" value="<%= form_method.upcase %>">
+  <% end %>
+
+  <label for="user_id">Utilisateur</label>
+  <input type="text" name="car[user_id]" id="user_id" value="<%= car&.user_id %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="number_plate">N° immatriculation</label>
+  <input type="text" name="car[number_plate]" id="number_plate" value="<%= car&.number_plate %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="make">Marque</label>
+  <input type="text" name="car[make]" id="make" value="<%= car&.make %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="model">Modèle</label>
+  <input type="text" name="car[model]" id="model" value="<%= car&.model %>" <%= 'readonly' if is_readonly %>><br>
+
+  <div>
+    <p for="energy">Energie</p>
+    <% Car::ENERGIE.each do |e| %>
+      <input type="radio" id=<%=e[:id]%> name="car[energy]" value=<%=e[:label]%>>
+      <label for=<%=e[:id]%>><%=e[:label]%></label><br>
+    <%end%>
+  </div>
+
+  <label for="horsepower">Puissance</label>
+  <input type="number" name="car[horsepower]" id="horsepower" value="<%= car&.horsepower %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="first_registration_date">Date de mise en circulation</label>
+  <input type="date" name="car[first_registration_date]" id="first_registration_date" value="<%= car&.first_registration_date %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="mileage">Kilomètrage</label>
+  <input type="number" name="car[mileage]" id="mileage" value="<%= car&.mileage %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="mileage_per_year">Kilomètrage par an</label>
+  <input type="number" name="car[mileage_per_year]" id="mileage_per_year" value="<%= car&.mileage_per_year %>" <%= 'readonly' if is_readonly %>><br>
+
+  <div>
+    <p for="use">Utilisation</p>
+    <% Car::USES.each do |u| %>
+      <%= check_box_tag "car[use][]", u[:id], @car&.use&.include?(u[:id]),
+        id: u[:id],
+        disabled: is_readonly,
+        class: (is_readonly ? 'readonly' : '')
+      %>
+      <%= label_tag u[:id], u[:label] %><br>
+    <% end %>
+    <br><br>
+  </div>
+
+  <label for="last_technical_control_date">Date du dernier Contrôle Technique</label>
+  <input type="date" name="car[last_technical_control_date]" id="last_technical_control_date" value="<%= car&.last_technical_control_date%>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="last_maintenance_operation_made_on">Date du dernier entretien</label>
+  <input type="date" name="car[last_maintenance_operation_made_on]" id="last_maintenance_operation_made_on" value="<%= car&.last_maintenance_operation_made_on %>" <%= 'readonly' if is_readonly %>><br>
+
+  <label for="last_maintenance_operation_mileage">Kilomètrage du dernier entretien</label>
+  <input type="number" name="car[last_maintenance_operation_mileage]" id="last_maintenance_operation_mileage" value="<%= car&.last_maintenance_operation_mileage %>" <%= 'readonly' if is_readonly %>><br>
+
+  <% unless is_readonly %>
+    <input type="submit" value="Valider">
+  <% end %>
+</form>

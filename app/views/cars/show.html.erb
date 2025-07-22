@@ -1,0 +1,14 @@
+
+<p>fiche de <%=@car.make%> <%=@car.model%> - <%=@car.number_plate%></p>
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  form_action: "#",
+  form_method: "get",
+  readonly: true
+} %>
+
+<a href="<%=edit_car_path(@car)%>">Mise à jour</a>
+
+<a href="<%=car_maintenance_items_path(@car)%>">Plan d'entretien</a>
+<a href="<%=car_garage_stops_path(@car)%>">Passages au garage</a>

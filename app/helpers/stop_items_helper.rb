@@ -1,0 +1,2 @@
+module StopItemsHelper
+end
