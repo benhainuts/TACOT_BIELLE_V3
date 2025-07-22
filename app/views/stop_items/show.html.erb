@@ -1,0 +1,10 @@
+stop_item show
+
+<%= render partial: 'form', locals: {
+  stop_item: @stop_item,
+  form_action: "#",
+  form_method: "get",
+  readonly: true
+} %>
+
+<a href="<%=edit_car_garage_stop_path(@car, @garage_stop)%>">Mise à jour</a>

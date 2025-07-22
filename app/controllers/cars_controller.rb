@@ -20,7 +20,7 @@ before_action :set_car, only: [:show, :edit, :update]
       # raise
       redirect_to cars_path
     else
-       render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -33,14 +33,11 @@ before_action :set_car, only: [:show, :edit, :update]
 
   def update
     # raise
-    @car.update(car_params)
-    # @car.use = params[:car][:use].to_s
-    # if @car.patch
-    # raise
+    if @car.update(car_params)
       redirect_to car_path(@car)
-    # else
-    #    render :new, status: :unprocessable_entity
-    # end
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def destroy

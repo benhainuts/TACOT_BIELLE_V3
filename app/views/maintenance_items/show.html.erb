@@ -1,0 +1,11 @@
+hello from maintenance_items show
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  maintenance_item: @maintenance_item,
+  form_action: "#",
+  form_method: "get",
+  readonly: true
+} %>
+
+<a href="<%=edit_car_maintenance_item_path(@car, @maintenance_item)%>">Mise à jour</a>

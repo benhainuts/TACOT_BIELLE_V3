@@ -1,0 +1,9 @@
+garage_stop index
+
+<p><%=link_to "nouveau" , new_car_garage_stop_path(@car)%></p>
+
+<ul>
+ <%@garage_stops.each do |stop|%>
+  <li><%=link_to stop.date , car_garage_stop_path(@car, stop)%></li>
+  <%end%>
+</ul>

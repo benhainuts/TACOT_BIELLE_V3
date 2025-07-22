@@ -1,0 +1,9 @@
+hello from maintenance_items index
+
+<p><%=link_to "nouveau" , new_car_maintenance_item_path%></p>
+
+<ul>
+ <%@maintenance_items.each do |item|%>
+  <li><%=link_to item.item_name , car_maintenance_item_path(@car, item)%></li>
+  <%end%>
+</ul>

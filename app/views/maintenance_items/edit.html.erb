@@ -1,0 +1,8 @@
+hello from edit_maintenance_item
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  maintenance_item: @maintenance_item,
+  form_action: car_maintenance_item_path(@car, @maintenance_item),
+  form_method: "patch"
+} %>

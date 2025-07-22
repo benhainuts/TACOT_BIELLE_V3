@@ -14,9 +14,7 @@
   <label for="make">Marque</label>
   <input type="text" name="car[make]" id="make" value="<%= car&.make %>" <%= 'readonly' if is_readonly %>><br>
 
-  <!-- Tu continues à faire ça pour les autres champs... -->
-
-   <label for="model">Modèle</label>
+  <label for="model">Modèle</label>
   <input type="text" name="car[model]" id="model" value="<%= car&.model %>" <%= 'readonly' if is_readonly %>><br>
 
   <div>
@@ -60,8 +58,6 @@
 
   <label for="last_maintenance_operation_mileage">Kilomètrage du dernier entretien</label>
   <input type="number" name="car[last_maintenance_operation_mileage]" id="last_maintenance_operation_mileage" value="<%= car&.last_maintenance_operation_mileage %>" <%= 'readonly' if is_readonly %>><br>
-
-  <%# fin des données à revoir %>
 
   <% unless is_readonly %>
     <input type="submit" value="Valider">

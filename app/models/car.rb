@@ -1,5 +1,7 @@
 class Car < ApplicationRecord
   belongs_to :user
+  has_many :maintenance_items
+  has_many :garage_stops
 
   # validates :number_plate, presence: true, uniqueness: true
   # validates :model, presence: true

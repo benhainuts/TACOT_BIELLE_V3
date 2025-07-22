@@ -1,0 +1,8 @@
+<h1>garages#edit</h1>
+<p>Find me in app/views/garages/edit.html.erb</p>
+
+<%= render partial: 'form', locals: {
+  garage: @garage,
+  form_action: garage_path(@garage),
+  form_method: "patch"
+} %>

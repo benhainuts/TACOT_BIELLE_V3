@@ -1,0 +1,11 @@
+hello from maintenance_items new
+
+<h1>Maintenance_item#new</h1>
+
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  maintenance_item: @maintenance_item,
+  form_action: car_maintenance_items_path,
+  form_method: "post"
+} %>

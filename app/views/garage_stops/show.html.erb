@@ -1,0 +1,12 @@
+garage_stop show
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  garage_stop: @garage_stop,
+  form_action: "#",
+  form_method: "get",
+  readonly: true
+} %>
+
+<a href="<%=edit_car_garage_stop_path(@car, @garage_stop)%>">Mise à jour</a>
+<a href="<%=car_garage_stop_stop_items_path(@car, @garage_stop)%>">Opérations réalisées</a>

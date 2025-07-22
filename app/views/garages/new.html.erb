@@ -1,0 +1,9 @@
+<h1>garages#new</h1>
+<p>Find me in app/views/garages/new.html.erb</p>
+
+
+<%= render partial: 'form', locals: {
+  garage: @garage,
+  form_action: garages_path,
+  form_method: "post"
+} %>
