@@ -6,6 +6,10 @@ gem 'ostruct'
 
 gem "devise"
 
+# gem ruby llm qui remplace la gem openai
+gem "ruby_llm"
+
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 

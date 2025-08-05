@@ -43,7 +43,7 @@ before_action :set_car, only: [:show, :edit, :update]
   def destroy
   end
 
-  private
+  # private
 
   def set_car
     @car = Car.find(params[:id])
@@ -53,4 +53,12 @@ before_action :set_car, only: [:show, :edit, :update]
     params.require(:car).permit(:user_id, :number_plate, :make, :model, :energy, :horsepower, :first_registration_date, :mileage, :mileage_per_year, :use, :last_technical_control_date, :last_maintenance_operation_made_on, :last_maintenance_operation_mileage, :energy, use: [])
   end
 
+  def create_plan_item(car)
+    client = OpenAI::Client.new
+    response = client.chat(parameters: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content:
+      "une voiture de marque #{car.make} Modele #{car.model} moteur #{car.engine} carburant #{car.fuel} puissance #{car.horsepower} de #{car.date_of_first_purchase} avec #{car.mileage} km et faisant #{car.estimated_mileage_per_year} km par an.  liste moi dans un json chaque entretien a faire, avec au minimum si applicable (vidange huile/ filtre à air / filtre carburant / filtre d'habitable / courroie de distribution / liquide de frein / liquide de refroidissement / révision), avec des intitulés courts ( 30 caracteres max) selon le constructeur avec son nom dans name: sa périodicité en km dans to_do_every_x_km: et sa periodicite en année dans to_do_every_x_years. ne renvoie que ce json, si erreur renvoie ce json vide."}]
+    })
+  end
 end
