@@ -40,6 +40,7 @@ class GarageStopsController < ApplicationController
 
 
   def photo_declaration_of_stop
+
     #lecture plaque d'immatriculation
     #lecture kilométrage
     #si plaque connue

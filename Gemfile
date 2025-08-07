@@ -6,8 +6,11 @@ gem 'ostruct'
 
 gem "devise"
 
-# gem ruby llm qui remplace la gem openai
+# CUSTOM : for AI prompt rubyllm gem that replaces openai gem
 gem "ruby_llm"
+
+# CUSTOM : for storing pictures
+gem 'cloudinary'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
