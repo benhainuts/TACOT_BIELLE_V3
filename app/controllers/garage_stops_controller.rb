@@ -39,26 +39,34 @@ class GarageStopsController < ApplicationController
   end
 
 
-  def photo_declaration_of_stop
-
-    #lecture plaque d'immatriculation
-    #lecture kilométrage
+  def invoice_review
+    #Analyse des images
+      #pour chaque image
+        #1er prompt à chat gpt
+        #lecture plaque d'immatriculation
+        #lecture marque
+        #lecture modele
+        #lecture carburant
+        #lecture kilométrage
+      #merge
     #si plaque connue
-      #on met à jour le kilometrage si supérieur a kilométrage dans voiture
-      #si le plan d'entretien est deja declaré
-        #on demande a chat gpt
-          #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
-          #sinon, on crée un nouvel intitulé
-        #on créé les nouveaux items si besoin
-      #sinon
-        #on tire les items de la facture
-        #on ajoute les eventuels elements manquants parmi la liste
+    #on met à jour le kilometrage si supérieur a kilométrage dans voiture
+    #si le plan d'entretien est deja declaré
+      #on demande a chat gpt
+        #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
+        #sinon, on crée un nouvel intitulé
+      #on créé les nouveaux items si besoin
+    #sinon
+      #on tire les items de la facture
+      #on ajoute les eventuels elements manquants parmi la liste
+
     #sinon
       #on a beosin d'un ajout manuel de la voiture
       #on tire les items de la facture
       #on ajoute les eventuels elements manquants parmi la liste
     #on créé le garage_stop
     #on declare le garage_stop_item
+  end
 
 
 private
@@ -72,7 +80,7 @@ private
   end
 
   def garage_stop_params
-    params.require(:garage_stop).permit(:car_id, :garage_id, :date, :mileage, :cost, :comments)
+    params.require(:garage_stop).permit(:car_id, :garage_id, :date, :mileage, :cost, :comments, :photos)
   end
 
 end

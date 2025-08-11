@@ -6,17 +6,20 @@ gem 'ostruct'
 
 gem "devise"
 
+# allow to use the .env file
+gem 'dotenv-rails'
+
 # CUSTOM : for AI prompt rubyllm gem that replaces openai gem
-gem "ruby_llm"
+gem 'ruby_llm'
 
 # CUSTOM : for storing pictures
 gem 'cloudinary'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.5", ">= 7.1.5.1"
+gem 'rails', '~> 7.1.5', '>= 7.1.5.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-gem "sprockets-rails"
+gem 'sprockets-rails'
 
 # Use sqlite3 as the database for Active Record
 # gem "sqlite3", ">= 1.4"

@@ -2,8 +2,17 @@ hello from maintenance_items index
 
 <p><%=link_to "nouveau" , new_car_maintenance_item_path%></p>
 
-<ul>
- <%@maintenance_items.each do |item|%>
-  <li><%=link_to item.item_name , car_maintenance_item_path(@car, item)%></li>
-  <%end%>
-</ul>
+<%if @car.maintenance_items.empty?%>
+  <div>
+    <p>pas d'opération déclarée dans le plan d'entretien</p>
+    <%= link_to "créer le plan d'entretien", car_maintenance_items_call_maintenance_path(@car) %>
+  </div>
+
+<%else%>
+  <%= link_to "mettre à jour le plan d'entretien", car_maintenance_items_call_maintenance_path(@car) %>
+  <ul>
+    <%@car.maintenance_items.each do |item|%>
+      <li><%=link_to item.item_name , car_maintenance_item_path(@car, item)%></li>
+    <%end%>
+  </ul>
+<%end%>
