@@ -42,12 +42,15 @@ class GarageStopsController < ApplicationController
   def invoice_review
     #Analyse des images
       #pour chaque image
-        #1er prompt à chat gpt
+        #prompt lecture d'image à chat gpt
         #lecture plaque d'immatriculation
         #lecture marque
         #lecture modele
         #lecture carburant
         #lecture kilométrage
+        #lecture des items d'entretiens
+
+      # lancement du prompt pour chaque image
       #merge
     #si plaque connue
     #on met à jour le kilometrage si supérieur a kilométrage dans voiture
@@ -68,6 +71,26 @@ class GarageStopsController < ApplicationController
     #on declare le garage_stop_item
   end
 
+  def image_reading_prompt()
+    @prompt = <<~PROMPT
+      Facture ou devis de réparation de véhicule.
+      Réponse attendue : JSON -> array de hash :
+      - invoice_number : numéro de facture : string ou null
+      - number_plate: plaque d'immatriculation : string ≤ 30 caractères
+      - make: constructeur : string ≤ 30 caractères ou null
+      - model: modèle : string ≤ 30 caractères ou null
+      - mileage : kilométrage : number ou null
+      - energy : carburant : string ≤ 30 caractères ou null
+      - maintenance_items : array avec chaque opération d'entretien détectée
+      si ce n'est pas une facture pour un véhicule, renvoyer ["facture non reconnue"]
+      si erreur, renvoyer [].
+    PROMPT
+  end
+
+  def images_reading_request()
+    raise
+    images_set = params[:photos]
+  end
 
 private
 

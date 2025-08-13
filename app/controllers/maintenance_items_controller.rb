@@ -75,7 +75,7 @@ private
       maintenance_list = "Liste exhaustive des entretiens à prévoir :"
     end
 
-    # Prompt optimisé
+    # Prompt
     @prompt = <<~PROMPT
       Voiture #{@car.make} #{@car.model}, #{@car.energy}, #{@car.horsepower} ch,
       1ère immat: #{@car.first_registration_date}, #{@car.mileage} km, #{@car.mileage_per_year} km/an.
