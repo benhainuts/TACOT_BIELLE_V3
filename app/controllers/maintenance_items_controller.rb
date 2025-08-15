@@ -106,6 +106,7 @@ private
 
     #Answerformat to an array of hashes
     array = JSON.parse(@response.content)
+    raise
     #For each line, create a new maintenance item in the PlanItem table
     array.each do |item|
       item.symbolize_keys!

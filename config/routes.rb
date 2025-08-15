@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   get 'cars/update'
   get 'cars/destroy'
   devise_for :users
+
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -36,7 +38,7 @@ Rails.application.routes.draw do
   get "cars/:car_id/garage_stops/", to: "garage_stops#index", as: "car_garage_stops"
   get "cars/:car_id/garage_stops/new", to: "garage_stops#new", as: "new_car_garage_stop"
   get "cars/:car_id/garage_stops/picture_analysis", to: "garage_stops#picture_analysis", as: "new_car_garage_stop_picture_analysis"
-  get "cars/:car_id/garage_stops/images_reading_request", to: "garage_stops#images_reading_request", as: "new_car_garage_stop_images_reading_request"
+  post "cars/:car_id/garage_stops/images_reading_request", to: "garage_stops#images_reading_request", as: "new_car_garage_stop_images_reading_request"
   get "cars/:car_id/garage_stops/:id", to: "garage_stops#show", as: "car_garage_stop"
   post "cars/:car_id/garage_stops", to: "garage_stops#create"
   get "cars/:car_id/garage_stops/:id/edit", to: "garage_stops#edit", as: "edit_car_garage_stop"
