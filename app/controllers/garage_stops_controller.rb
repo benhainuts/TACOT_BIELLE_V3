@@ -115,6 +115,9 @@ class GarageStopsController < ApplicationController
       flash[:info] = "Image #{i} on #{pagesnb} analyzed."
     end
     images_data_analysis_and_formatting(@read_data)
+    consolidated_data_undoubling(@consolidated_data)
+    if @consolidated_data[:number_plate].count > 1
+      redirect_to
     raise
   end
 
@@ -139,6 +142,12 @@ class GarageStopsController < ApplicationController
         @consolidated_data[:mileage]          << page["mileage"] unless page["mileage"] = "null"
         @consolidated_data[:energy]           << page["energy"] unless page["energy"] = "null"
         @consolidated_data[:maintenance_items].concat(page["maintenance_items"]) if page["maintenance_items"]
+      end
+    end
+
+    def consolidated_data_undoubling(consolidated_data)
+      consolidated_data.each |item_array| do
+        item_array.uniq!
       end
     end
   end
