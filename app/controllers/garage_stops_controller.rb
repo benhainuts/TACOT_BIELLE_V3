@@ -101,7 +101,9 @@ class GarageStopsController < ApplicationController
 
     request = chat.ask image_reading_prompt(), with: { image: image }
     @raw = request.content
-    @response = JSON.parse(request.content.gsub(/```json|```/, "").strip)
+    parsed = JSON.parse(@raw.gsub(/```json|```/, "").strip)
+
+    @response = parsed.is_a?(Array) ? parsed[0] : parsed
   end
 
   def images_reading_request()
@@ -116,9 +118,12 @@ class GarageStopsController < ApplicationController
     end
     images_data_analysis_and_formatting(@read_data)
     consolidated_data_undoubling(@consolidated_data)
-    if @consolidated_data[:number_plate].count > 1
-      redirect_to
     raise
+    if @consolidated_data[:number_plate].count > 1
+      redirect_to #a finir, ne pas analyser
+    raise
+    end
+
   end
 
   def images_data_analysis_and_formatting(read_data)
@@ -133,7 +138,7 @@ class GarageStopsController < ApplicationController
     }
 
     read_data.each do |page|
-      page = page[0]
+
       unless page == "facture non reconnue"
         @consolidated_data[:invoice_number]   << page["invoice_number"] unless page["invoice_number"] = "null"
         @consolidated_data[:number_plate]     << page["number_plate"] unless page["number_plate"] = "null"
@@ -144,11 +149,11 @@ class GarageStopsController < ApplicationController
         @consolidated_data[:maintenance_items].concat(page["maintenance_items"]) if page["maintenance_items"]
       end
     end
+  end
 
-    def consolidated_data_undoubling(consolidated_data)
-      consolidated_data.each |item_array| do
-        item_array.uniq!
-      end
+  def consolidated_data_undoubling(consolidated_data)
+    consolidated_data.each  do |item_array|
+      item_array.uniq!
     end
   end
 
