@@ -82,7 +82,7 @@ private
 
       #{maintenance_list}
 
-      Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;000000000000000000
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur; autres opérations spécifiques modèle.
 

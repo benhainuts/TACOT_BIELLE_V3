@@ -101,9 +101,7 @@ class GarageStopsController < ApplicationController
 
     request = chat.ask image_reading_prompt(), with: { image: image }
     @raw = request.content
-    parsed = JSON.parse(@raw.gsub(/```json|```/, "").strip)
-
-    @response = parsed.is_a?(Array) ? parsed[0] : parsed
+    @response = JSON.parse(@raw.gsub(/```json|```/, "").strip)
   end
 
   def images_reading_request()
@@ -114,7 +112,7 @@ class GarageStopsController < ApplicationController
     images_set.each do |image, i|
       image_reading_chatgpt(image)
       @read_data << @response
-      flash[:info] = "Image #{i} on #{pagesnb} analyzed."
+      puts "Image #{i} on #{pagesnb} analyzed."
     end
     images_data_analysis_and_formatting(@read_data)
     consolidated_data_undoubling(@consolidated_data)
@@ -138,15 +136,15 @@ class GarageStopsController < ApplicationController
     }
 
     read_data.each do |page|
-
+      page = page[0]
       unless page == "facture non reconnue"
-        @consolidated_data[:invoice_number]   << page["invoice_number"] unless page["invoice_number"] = "null"
-        @consolidated_data[:number_plate]     << page["number_plate"] unless page["number_plate"] = "null"
-        @consolidated_data[:make]             << page["make"] unless page["make"] = "null"
-        @consolidated_data[:model]            << page["model"] unless page["model"] = "null"
-        @consolidated_data[:mileage]          << page["mileage"] unless page["mileage"] = "null"
-        @consolidated_data[:energy]           << page["energy"] unless page["energy"] = "null"
-        @consolidated_data[:maintenance_items].concat(page["maintenance_items"]) if page["maintenance_items"]
+        @consolidated_data[:invoice_number]   << page["invoice_number"] #unless page["invoice_number"] = "null"
+        @consolidated_data[:number_plate]     << page["number_plate"] #unless page["number_plate"] = "null"
+        @consolidated_data[:make]             << page["make"] #unless page["make"] = "null"
+        @consolidated_data[:model]            << page["model"] #unless page["model"] = "null"
+        @consolidated_data[:mileage]          << page["mileage"] #unless page["mileage"] = "null"
+        @consolidated_data[:energy]           << page["energy"] #unless page["energy"] = "null"
+        @consolidated_data[:maintenance_items].concat(page["maintenance_items"])  if page["maintenance_items"]
       end
     end
   end
