@@ -56,9 +56,15 @@ class GarageStopsController < ApplicationController
 
       # lancement du prompt pour chaque image
       #merge
+    images_reading_request()
+
     #si plaque connue
+    if Car.find_by(number_plate: @consolidated_data[:number_plate][0].strip.delete("-,_"))
+      @car = Car.find_by(number_plate: @consolidated_data[:number_plate][0].strip.delete("-,_"))
     #on met à jour le kilometrage si supérieur a kilométrage dans voiture
+      if @car.mileage = @consolidated_data[:mileage][0] if @car.mileage < @consolidated_data[:mileage][0]
     #si le plan d'entretien est deja declaré
+      if @car.maintenance_items.exists?
       #on demande a chat gpt
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
         #sinon, on crée un nouvel intitulé
@@ -118,8 +124,7 @@ class GarageStopsController < ApplicationController
     consolidated_data_undoubling(@consolidated_data)
     raise
     if @consolidated_data[:number_plate].count > 1
-      redirect_to #a finir, ne pas analyser
-    raise
+      redirect_to  new_car_garage_stop_picture_analysis_path(@car), status: :unprocessable_entity
     end
 
   end
