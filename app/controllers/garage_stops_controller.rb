@@ -206,7 +206,7 @@ private
   end
 
   def garage_stop_params
-    params.require(:garage_stop).permit(:car_id, :garage_id, :date, :mileage, :cost, :comments, :photos)
+    params.require(:garage_stop).permit(:car_id, :garage_id, :date, :mileage, :cost, :comments)
   end
 
 end
