@@ -1,0 +1,11 @@
+<form action=<%=new_car_garage_stop_images_reading_request_path(@car)%> method="post" enctype="multipart/form-data">charger photos
+  <label for="photos">Charger photos</label>
+  <input type="file" name="garage_stop[photos][]" id="photos"  multiple="multiple" >
+
+  <div>-------------------</div>
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+  <input type="submit" value="Valider">
+  <%# value="<%= garage_stop&.photos %>
+</form>
+
+<div>---------------------<br>---------------------</div>

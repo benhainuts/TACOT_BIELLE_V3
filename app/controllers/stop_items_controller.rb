@@ -44,7 +44,7 @@ private
   end
 
   # def set_maintenance_item
-  #   @maitenance_item = MaintenanceItem.find(params[:maintenance_item_id])
+  #   @maintenance_item = MaintenanceItem.find(params[:maintenance_item_id])
   # end
 
   def set_stop_item
