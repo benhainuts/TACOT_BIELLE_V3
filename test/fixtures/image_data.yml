@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  invoice_number: MyString
+  number_plate: MyString
+  make: MyString
+  model: MyString
+  mileage: 1
+  energy: MyString
+  maintenance_items: MyText
+
+two:
+  user: two
+  invoice_number: MyString
+  number_plate: MyString
+  make: MyString
+  model: MyString
+  mileage: 1
+  energy: MyString
+  maintenance_items: MyText

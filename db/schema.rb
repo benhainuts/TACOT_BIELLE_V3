@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_07_083739) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_01_130917) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_07_083739) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "image_data", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "invoice_number"
+    t.string "number_plate"
+    t.string "make"
+    t.string "model"
+    t.integer "mileage"
+    t.string "energy"
+    t.text "maintenance_items"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_image_data_on_user_id"
+  end
+
   create_table "maintenance_items", force: :cascade do |t|
     t.bigint "car_id", null: false
     t.string "item_name"
@@ -123,6 +137,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_07_083739) do
   add_foreign_key "cars", "users"
   add_foreign_key "garage_stops", "cars"
   add_foreign_key "garage_stops", "garages"
+  add_foreign_key "image_data", "users"
   add_foreign_key "maintenance_items", "cars"
   add_foreign_key "stop_items", "garage_stops"
   add_foreign_key "stop_items", "maintenance_items"

@@ -59,16 +59,28 @@ class GarageStopsController < ApplicationController
     images_reading_request()
 
     #si plaque connue
-    if Car.find_by(number_plate: @consolidated_data[:number_plate][0].strip.delete("-,_"))
-      @car = Car.find_by(number_plate: @consolidated_data[:number_plate][0].strip.delete("-,_"))
-    #on met à jour le kilometrage si supérieur a kilométrage dans voiture
-      if @car.mileage = @consolidated_data[:mileage][0] if @car.mileage < @consolidated_data[:mileage][0]
-    #si le plan d'entretien est deja declaré
-      if @car.maintenance_items.exists?
-      #on demande a chat gpt
+    cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
+    if Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
+      @invoiced_car = Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
+      #on met à jour le kilometrage si supérieur a kilométrage dans voiture
+      puts "voiture retrouvée"
+      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @car.mileage < @consolidated_data[:mileage][0]
+      @invoiced_car.save
+
+      if @invoiced_car.maintenance_items.exists?
+        existing_items = @invoiced_car.maintenance_items
+        invoice_items = @consolidated_data[:maintenance_items]
+        #on demande a chat gpt
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
         #sinon, on crée un nouvel intitulé
-      #on créé les nouveaux items si besoin
+      #on créé les nouveaux items si besoinraise
+      end
+
+
+
+    end
+    raise
+
     #sinon
       #on tire les items de la facture
       #on ajoute les eventuels elements manquants parmi la liste
@@ -83,7 +95,7 @@ class GarageStopsController < ApplicationController
 
   def image_reading_prompt()
     return <<~PROMPT
-      Facture ou devis de réparation de véhicule.
+app/helpers      Facture ou devis de réparation de véhicule.
       Réponse attendue : JSON => array de hash :
       - invoice_number : numéro de facture : string ou null
       - number_plate: plaque d'immatriculation : string ≤ 30 caractères ou null
@@ -122,7 +134,7 @@ class GarageStopsController < ApplicationController
     end
     images_data_analysis_and_formatting(@read_data)
     consolidated_data_undoubling(@consolidated_data)
-    raise
+
     if @consolidated_data[:number_plate].count > 1
       redirect_to  new_car_garage_stop_picture_analysis_path(@car), status: :unprocessable_entity
     end
@@ -158,6 +170,29 @@ class GarageStopsController < ApplicationController
     consolidated_data.each  do |item_array|
       item_array.uniq!
     end
+    puts "Image Data en creation"
+    if imgdata = ImageDatum.new(
+      # user: current_user,
+      user_id: "1",
+      invoice_number: consolidated_data[:invoice_number],
+      number_plate: consolidated_data[:number_plate],
+      make: consolidated_data[:make],
+      model: consolidated_data[:model],
+      mileage: consolidated_data[:mileage],
+      energy: consolidated_data[:energy],
+      maintenance_items: consolidated_data[:maintenance_items])
+
+      imgdata.save
+      puts "Imagedata créée"
+    else
+      puts "Echec de la creation de l'image"
+    end
+
+  end
+
+  def maintenance_item_review_prompt(existing_items , invoice_items)
+
+    #integrer le prompt a chat gpt
   end
 
 private
