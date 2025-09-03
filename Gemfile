@@ -6,6 +6,9 @@ gem 'ostruct'
 
 gem "devise"
 
+#gem dotenv.rails for charging the .env file
+gem "dotenv-rails"
+
 # gem ruby llm qui remplace la gem openai
 gem "ruby_llm"
 

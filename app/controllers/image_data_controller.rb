@@ -26,7 +26,7 @@ class ImageDataController < ApplicationController
       @invoiced_car = Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
       #on met à jour le kilometrage si supérieur a kilométrage dans voiture
       puts "voiture retrouvée"
-      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @car.mileage < @consolidated_data[:mileage][0]
+      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car.mileage < @consolidated_data[:mileage][0]
       @invoiced_car.save
 
       if @invoiced_car.maintenance_items.exists?
