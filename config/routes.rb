@@ -34,11 +34,8 @@ Rails.application.routes.draw do
 
   get "cars/:car_id/garage_stops/", to: "garage_stops#index", as: "car_garage_stops"
   get "cars/:car_id/garage_stops/new", to: "garage_stops#new", as: "new_car_garage_stop"
-<<<<<<< HEAD
   get "cars/:car_id/garage_stops/picture_analysis", to: "garage_stops#picture_analysis", as: "new_car_garage_stop_picture_analysis"
   post "cars/:car_id/garage_stops/invoice_review", to: "garage_stops#invoice_review", as: "new_car_garage_stop_invoice_review"
-=======
->>>>>>> origin/master
   get "cars/:car_id/garage_stops/:id", to: "garage_stops#show", as: "car_garage_stop"
   post "cars/:car_id/garage_stops", to: "garage_stops#create"
   get "cars/:car_id/garage_stops/:id/edit", to: "garage_stops#edit", as: "edit_car_garage_stop"
@@ -60,5 +57,8 @@ Rails.application.routes.draw do
   get "garages/:id/edit", to: "garages#edit", as: "edit_garage"
   patch "garages/:id", to: "garages#update"
   delete "garages/:id", to: "garages#destroy"
+
+  get "picture_analysis", to: "image_data#picture_analysis", as: "new_picture_analysis"
+  post "invoice_review", to: "image_data#invoice_review", as: "new_invoice_review"
 
 end
