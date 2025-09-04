@@ -11,18 +11,18 @@ class ImageDataController < ApplicationController
 
     #si plaque connue
     cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
-    if Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
+    if
       @invoiced_car = Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
       #on met à jour le kilometrage si supérieur a kilométrage dans voiture
       puts "voiture retrouvée"
-      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car..mileage < @consolidated_data[:mileage][0]
+      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car.mileage < @consolidated_data[:mileage][0]
       @invoiced_car.save
 
-      if @invoiced_car.maintenance_items.exists?
-        existing_items = @invoiced_car.maintenance_items
-        invoice_items = @consolidated_data[:maintenance_items]
+      if @invoiced_car.maintenance_items.any?
+        @existing_items = @invoiced_car.maintenance_items
+        @invoice_items = @consolidated_data[:maintenance_items]
 
-        invoice_items_vs_plan_matching(existing_items,invoice_items)
+        invoice_items_vs_plan_matching()
         #on demande a chat gpt
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
         #sinon, on crée un nouvel intitulé
@@ -47,6 +47,8 @@ class ImageDataController < ApplicationController
   end
 
   def image_reading_prompt()
+    #JSON requis pour parser la réponse
+    require 'json'
     return <<~PROMPT
       app/helpers      Facture ou devis de réparation de véhicule.
       Réponse attendue : JSON => array de hash :
@@ -149,36 +151,52 @@ class ImageDataController < ApplicationController
       imgdata.save
       puts "Imagedata créée"
     else
-      puts "Echec de la creation de l'image"
+      puts "Echec de la creation de l'image_data"
     end
 
   end
 
-  def invoice_items_vs_plan_matching_prompt(existing_items , invoice_items)
-    return <<~PROMPT
-      app/helpers      associer items de la facture avec items existants du plan d'entretien si possible.
-      items existants :
+  def invoice_items_vs_plan_matching_prompt()
+    require 'json'
+    #constitution du prompt
+    # Liste des entretiens déjà existants
+    existing = "Déjà listés:\n" +
+      @existing_items.map do |i|
+        "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
+      end.join("\n")
+
+    # Liste des entretiens identifiés dans la facture
+    in_invoice = "Dans la facture:\n" +
+      @invoice_items.map do |i|
+        "- #{i}"
+      end.join("\n")
+
+    @item_matching_prompt = <<~PROMPT
+      app/helpers      associer items de la facture avec le nom des items existants du plan d'entretien si correspondants.\n
+      #{existing}
+      #{in_invoice}
       Réponse attendue : JSON => array de hash :
-      - invoice_number : numéro de facture : string ou null
-      - number_plate: plaque d'immatriculation : string ≤ 30 caractères ou null
-      - make: constructeur : string ≤ 30 caractères ou null
-      - model: modèle : string ≤ 30 caractères ou null
-      - mileage : kilométrage : number ou null
-      - energy : carburant : string ≤ 30 caractères ou null
-      - maintenance_items : array avec chaque opération d'entretien détectée en utilisant si applicables des titres generiques, tels que par exemple : vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      - items associés : array d'array [item de la facture, item déja listé]
+      - items non associés: array d'array [item de la facture, "" ou correspondance dans liste: vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
-      révisions constructeur.
-      si ce n'est pas une facture pour un véhicule, renvoyer ["facture non reconnue"]
+      révisions constructeur]
+      si aucun entretien détecté (ex: réparation ou équipement), renvoyer ["pas d'opération d'entretien"]
       si erreur, renvoyer ["erreur"].
     PROMPT
   end
+
+  def invoice_items_vs_plan_matching()
+    invoice_items_vs_plan_matching_prompt()
+    #prompt to chatGPT
+    client = RubyLLM::Chat.new
+
+      @response = client.ask(@item_matching_prompt)
+      # raise
+
+    #Answerformat to an array of hashes
+    @item_matching_array = JSON.parse(@response.content)
+    raise
   end
-
-  def invoice_items_vs_plan_matching_chatgpt(existing_items , invoice_items)
-
-    #integrer le prompt a chat gpt
-  end
-
 private
 
   def image_data_params()
