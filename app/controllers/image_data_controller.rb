@@ -6,18 +6,7 @@ class ImageDataController < ApplicationController
 
 
   def invoice_review
-    #Analyse des images
-      #pour chaque image
-        #prompt lecture d'image à chat gpt
-        #lecture plaque d'immatriculation
-        #lecture marque
-        #lecture modele
-        #lecture carburant
-        #lecture kilométrage
-        #lecture des items d'entretiens
 
-      # lancement du prompt pour chaque image
-      #merge
     images_reading_request()
 
     #si plaque connue
@@ -26,12 +15,14 @@ class ImageDataController < ApplicationController
       @invoiced_car = Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
       #on met à jour le kilometrage si supérieur a kilométrage dans voiture
       puts "voiture retrouvée"
-      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car.mileage < @consolidated_data[:mileage][0]
+      @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car..mileage < @consolidated_data[:mileage][0]
       @invoiced_car.save
 
       if @invoiced_car.maintenance_items.exists?
         existing_items = @invoiced_car.maintenance_items
         invoice_items = @consolidated_data[:maintenance_items]
+
+        invoice_items_vs_plan_matching(existing_items,invoice_items)
         #on demande a chat gpt
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
         #sinon, on crée un nouvel intitulé
@@ -86,6 +77,18 @@ class ImageDataController < ApplicationController
 
   def images_reading_request()
     # raise
+    #Analyse des images
+      #pour chaque image
+        #prompt lecture d'image à chat gpt
+        #lecture plaque d'immatriculation
+        #lecture marque
+        #lecture modele
+        #lecture carburant
+        #lecture kilométrage
+        #lecture des items d'entretiens
+
+      # lancement du prompt pour chaque image
+      #merge
     images_set = params[:data][:photos]
     @read_data = []
     pagesnb=images_set.count
@@ -151,7 +154,27 @@ class ImageDataController < ApplicationController
 
   end
 
-  def maintenance_item_review_prompt(existing_items , invoice_items)
+  def invoice_items_vs_plan_matching_prompt(existing_items , invoice_items)
+    return <<~PROMPT
+      app/helpers      associer items de la facture avec items existants du plan d'entretien si possible.
+      items existants :
+      Réponse attendue : JSON => array de hash :
+      - invoice_number : numéro de facture : string ou null
+      - number_plate: plaque d'immatriculation : string ≤ 30 caractères ou null
+      - make: constructeur : string ≤ 30 caractères ou null
+      - model: modèle : string ≤ 30 caractères ou null
+      - mileage : kilométrage : number ou null
+      - energy : carburant : string ≤ 30 caractères ou null
+      - maintenance_items : array avec chaque opération d'entretien détectée en utilisant si applicables des titres generiques, tels que par exemple : vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
+      révisions constructeur.
+      si ce n'est pas une facture pour un véhicule, renvoyer ["facture non reconnue"]
+      si erreur, renvoyer ["erreur"].
+    PROMPT
+  end
+  end
+
+  def invoice_items_vs_plan_matching_chatgpt(existing_items , invoice_items)
 
     #integrer le prompt a chat gpt
   end
