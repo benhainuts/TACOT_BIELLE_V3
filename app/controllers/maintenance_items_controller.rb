@@ -82,7 +82,7 @@ private
 
       #{maintenance_list}
 
-      Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;000000000000000000
+      Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur; autres opérations spécifiques modèle.
 
@@ -92,7 +92,7 @@ private
       - to_do_every_x_km: nombre ou null
       - to_do_every_x_years: nombre ou null
 
-      Si erreur, renvoyer [].
+      Si erreur ou plus de nouveaux items, renvoyer [].
     PROMPT
   end
 
