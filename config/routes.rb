@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   delete "cars/:id", to: "cars#destroy"
 
   get "cars/:car_id/maintenance_items/", to: "maintenance_items#index", as: "car_maintenance_items"
+  get "cars/:car_id/maintenance_items/call_maintenance", to: "maintenance_items#call_maintenance", as: "car_maintenance_items_call_maintenance"
   get "cars/:car_id/maintenance_items/new", to: "maintenance_items#new", as: "new_car_maintenance_item"
   get "cars/:car_id/maintenance_items/:id", to: "maintenance_items#show", as: "car_maintenance_item"
   post "cars/:car_id/maintenance_items", to: "maintenance_items#create"

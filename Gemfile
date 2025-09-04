@@ -9,8 +9,11 @@ gem "devise"
 #gem dotenv.rails for charging the .env file
 gem "dotenv-rails"
 
-# gem ruby llm qui remplace la gem openai
-gem "ruby_llm"
+# CUSTOM : for AI prompt rubyllm gem that replaces openai gem
+gem 'ruby_llm'
+
+# CUSTOM : for storing pictures
+gem 'cloudinary'
 
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"

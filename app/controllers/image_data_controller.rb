@@ -157,6 +157,7 @@ class ImageDataController < ApplicationController
   def invoice_items_vs_plan_matching_prompt(existing_items , invoice_items)
     return <<~PROMPT
       app/helpers      associer items de la facture avec items existants du plan d'entretien si possible.
+      items existants :
       Réponse attendue : JSON => array de hash :
       - invoice_number : numéro de facture : string ou null
       - number_plate: plaque d'immatriculation : string ≤ 30 caractères ou null
@@ -168,7 +169,7 @@ class ImageDataController < ApplicationController
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur.
       si ce n'est pas une facture pour un véhicule, renvoyer ["facture non reconnue"]
-      si erreur, renvoyer [].
+      si erreur, renvoyer ["erreur"].
     PROMPT
   end
   end
