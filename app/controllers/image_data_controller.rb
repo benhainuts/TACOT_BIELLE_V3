@@ -8,7 +8,13 @@ class ImageDataController < ApplicationController
   def invoice_review
 
     images_reading_request()
-
+    if @consolidated_data[:number_plate].count > 1
+      flash[:alert] = "Il y a plus de deux voitures sur l'analyse, veuillez recommencer"
+      puts "erreur, les factures concernent plusieurs voitures"
+      redirect_to  new_picture_analysis_path(), status: :unprocessable_entity
+    else
+      flash[:notice] = "image analysée avec succès"
+    end
     #si plaque connue
     cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
     if
@@ -17,11 +23,10 @@ class ImageDataController < ApplicationController
       puts "voiture retrouvée"
       @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car.mileage < @consolidated_data[:mileage][0]
       @invoiced_car.save
-
+      #si la voiture possède déjà un plan d'entretien, alors on matche les eventuelles lignes de factures qui correspondent à des lignes existantes.
       if @invoiced_car.maintenance_items.any?
         @existing_items = @invoiced_car.maintenance_items
         @invoice_items = @consolidated_data[:maintenance_items]
-
         invoice_items_vs_plan_matching()
         #on demande a chat gpt
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
@@ -99,9 +104,6 @@ class ImageDataController < ApplicationController
     end
     images_data_analysis_and_formatting(@read_data)
     consolidated_data_undoubling(@consolidated_data)
-    if @consolidated_data[:number_plate].count > 1
-      redirect_to  new_car_garage_stop_picture_analysis_path(@car), status: :unprocessable_entity
-    end
   end
 
   def images_data_analysis_and_formatting(read_data)
