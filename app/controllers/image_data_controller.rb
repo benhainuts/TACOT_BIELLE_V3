@@ -71,7 +71,6 @@ class ImageDataController < ApplicationController
     # base64_image = Base64.encode64(image.read)
     chat = RubyLLM.chat(model: 'gpt-4o') # vision-capable model
     prompt = image_reading_prompt()
-
     request = chat.ask image_reading_prompt(), with: { image: image }
     @raw = request.content
     @response = JSON.parse(@raw.gsub(/```json|```/, "").strip)
@@ -88,7 +87,6 @@ class ImageDataController < ApplicationController
         #lecture carburant
         #lecture kilométrage
         #lecture des items d'entretiens
-
       # lancement du prompt pour chaque image
       #merge
     images_set = params[:data][:photos]
@@ -101,7 +99,6 @@ class ImageDataController < ApplicationController
     end
     images_data_analysis_and_formatting(@read_data)
     consolidated_data_undoubling(@consolidated_data)
-
     if @consolidated_data[:number_plate].count > 1
       redirect_to  new_car_garage_stop_picture_analysis_path(@car), status: :unprocessable_entity
     end
@@ -117,7 +114,6 @@ class ImageDataController < ApplicationController
       energy: [],
       maintenance_items: []
     }
-
     read_data.each do |page|
       page = page[0]
       unless page == "facture non reconnue"
@@ -153,7 +149,6 @@ class ImageDataController < ApplicationController
     else
       puts "Echec de la creation de l'image_data"
     end
-
   end
 
   def invoice_items_vs_plan_matching_prompt()
@@ -164,13 +159,11 @@ class ImageDataController < ApplicationController
       @existing_items.map do |i|
         "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
       end.join("\n")
-
     # Liste des entretiens identifiés dans la facture
     in_invoice = "Dans la facture:\n" +
       @invoice_items.map do |i|
         "- #{i}"
       end.join("\n")
-
     @item_matching_prompt = <<~PROMPT
       app/helpers      associer items de la facture avec le nom des items existants du plan d'entretien si correspondants.\n
       #{existing}
@@ -189,14 +182,13 @@ class ImageDataController < ApplicationController
     invoice_items_vs_plan_matching_prompt()
     #prompt to chatGPT
     client = RubyLLM::Chat.new
-
-      @response = client.ask(@item_matching_prompt)
-      # raise
-
+    @response = client.ask(@item_matching_prompt)
+    # raise
     #Answerformat to an array of hashes
     @item_matching_array = JSON.parse(@response.content)
     raise
   end
+
 private
 
   def image_data_params()
