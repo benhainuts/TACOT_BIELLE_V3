@@ -7,6 +7,10 @@ class MaintenanceItemsController < ApplicationController
     @maintenance_items = @car.maintenance_items
   end
 
+  def index_from_picture
+    set_image_data()
+  end
+
   def show
 
   end
@@ -50,6 +54,10 @@ private
 
   def set_car
     @car=Car.find(params[:car_id])
+  end
+
+  def set_image_data
+    @imgdata=ImageDatum.find(params[:image_datum_id])
   end
 
   def maintenance_item_params

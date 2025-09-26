@@ -6,7 +6,6 @@ class ImageDataController < ApplicationController
 
 
   def invoice_review
-
     images_reading_request()
     if @consolidated_data[:number_plate].count > 1
       flash[:alert] = "Il y a plus de deux voitures sur l'analyse, veuillez recommencer"
@@ -33,11 +32,11 @@ class ImageDataController < ApplicationController
         #sinon, on crée un nouvel intitulé
       #on créé les nouveaux items si besoinraise
       end
-
-
-
+    else
+      flash[:notice] = "voiture non retrouvée, création de l'enregistrement"
+      redirect_to new_car_from_picture_path(@imgdata)
     end
-    raise
+    # raise
 
     #sinon
       #on tire les items de la facture
@@ -131,11 +130,12 @@ class ImageDataController < ApplicationController
   end
 
   def consolidated_data_undoubling(consolidated_data)
+    require 'json'
     consolidated_data.each  do |item_array|
       item_array.uniq!
     end
     puts "Image Data en creation"
-    if imgdata = ImageDatum.new(
+    if @imgdata = ImageDatum.new(
       # user: current_user,
       user_id: "1",
       invoice_number: consolidated_data[:invoice_number],
@@ -144,9 +144,9 @@ class ImageDataController < ApplicationController
       model: consolidated_data[:model],
       mileage: consolidated_data[:mileage],
       energy: consolidated_data[:energy],
+      # maintenance_items: JSON.parse(consolidated_data[:maintenance_items]))
       maintenance_items: consolidated_data[:maintenance_items])
-
-      imgdata.save
+      @imgdata.save
       puts "Imagedata créée"
     else
       puts "Echec de la creation de l'image_data"
@@ -171,8 +171,8 @@ class ImageDataController < ApplicationController
       #{existing}
       #{in_invoice}
       Réponse attendue : JSON => array de hash :
-      - items associés : array d'array [item de la facture, item déja listé]
-      - items non associés: array d'array [item de la facture, "" ou correspondance dans liste: vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      - associated_items : array d'array [item de la facture, item déja listé]
+      - unassociated_items: array d'array [item de la facture, "" ou correspondance dans liste: vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur]
       si aucun entretien détecté (ex: réparation ou équipement), renvoyer ["pas d'opération d'entretien"]
@@ -188,7 +188,9 @@ class ImageDataController < ApplicationController
     # raise
     #Answerformat to an array of hashes
     @item_matching_array = JSON.parse(@response.content)
-    raise
+    @imgdata.associated_items = @item_matching_array[0][associated_items]
+    @imgdata.unassociated_items = @item_matching_array[0][unassociated_items]
+    # raise
   end
 
 private
