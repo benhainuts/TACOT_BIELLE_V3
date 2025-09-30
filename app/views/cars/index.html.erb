@@ -4,7 +4,7 @@
 <p><%=link_to "nouveau" ,new_car_path%></p>
 
 <ul>
- <%@cars.each do |car|%>
-  <li><%=link_to car.make ,car_path(car)%>, <%=car.number_plate%></li>
+  <%@cars.each do |car|%>
+    <li><%=link_to car.make ,car_path(car)%>, <%=car.number_plate%></li>
   <%end%>
 </ul>

@@ -9,6 +9,8 @@ class MaintenanceItemsController < ApplicationController
 
   def index_from_picture
     set_image_data()
+    @maintenance_items = @car.maintenance_items
+    create_prompt()
   end
 
   def show
@@ -34,7 +36,6 @@ class MaintenanceItemsController < ApplicationController
 
   end
 
-
   def update
     if @maintenance_item.update(maintenance_item_params)
       redirect_to car_maintenance_item_path(@car, @maintenance_item)
@@ -46,7 +47,6 @@ class MaintenanceItemsController < ApplicationController
 
   def call_maintenance
     create_plan()
-    raise
     redirect_to maintenance_items_path(@car)
   end
 
@@ -72,15 +72,30 @@ private
     #JSON requis pour parser la réponse
     require 'json'
     #constitution du prompt
-    # Liste des entretiens déjà faits ou à prévoir
-    if @car.maintenance_items.any?
-      maintenance_list = "Déjà listés:\n" +
-        @car.maintenance_items.map do |i|
-          "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
-        end.join("\n") +
-        "\nListe les entretiens supplémentaires (non présents ci-dessus) si applicables :"
+    #Listing des entretiens déja connus
+    if @car.maintenance_items.any? || @imgdata.unassociated_items.any?
+      in_plan = ""
+      in_invoice = ""
+      # Liste des entretiens déjà faits ou à prévoir
+      if @car.maintenance_items.any?
+        in_plan = "Déjà listés:\n" +
+          @car.maintenance_items.map do |i|
+            "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
+          end
+        .join("\n")
+      end
+      # Liste des entretiens dans la facture en cours d'intégration
+      if @imgdata.unassociated_items.any?
+        in_invoice = "Entretiens supplémentaires dans facture, à ajouter au plan:\n"+
+          @imgdata.unassociated_items.each do |item|
+            "- #{item[1]}"
+          end
+        .join("\n")
+      end
+      @maintenance_list = in_plan + in_invoice +
+      "\nListe les entretiens supplémentaires (non présents ci-dessus) si applicables :"
     else
-      maintenance_list = "Liste exhaustive des entretiens à prévoir :"
+      @maintenance_list = "Liste exhaustive des entretiens à prévoir :"
     end
 
     # Prompt
@@ -88,7 +103,7 @@ private
       Voiture #{@car.make} #{@car.model}, #{@car.energy}, #{@car.horsepower} ch,
       1ère immat: #{@car.first_registration_date}, #{@car.mileage} km, #{@car.mileage_per_year} km/an.
 
-      #{maintenance_list}
+      #{@maintenance_list}
 
       Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
@@ -106,6 +121,7 @@ private
 
   def create_plan
     create_prompt()
+    raise
     #prompt to chatGPT
     client = RubyLLM::Chat.new
 
