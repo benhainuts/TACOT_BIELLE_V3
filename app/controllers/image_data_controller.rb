@@ -13,17 +13,20 @@ class ImageDataController < ApplicationController
       redirect_to  new_picture_analysis_path(), status: :unprocessable_entity
     else
       flash[:notice] = "image analysée avec succès"
+      puts "image analysée avec succès"
     end
     #si plaque connue
     cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
+    puts "CONTROLE DE L EXISTENCE DE LA VOITURE EN BASE"
     if
       @invoiced_car = Car.where("UPPER(REPLACE(REPLACE(REPLACE(REPLACE(number_plate, '-', ''), '_', ''), ',', ''), ' ', '')) = ?", cleaned_plate).first
       #on met à jour le kilometrage si supérieur a kilométrage dans voiture
-      puts "voiture retrouvée"
+      puts "=> voiture retrouvée"
       @invoiced_car.mileage = @consolidated_data[:mileage][0] if @invoiced_car.mileage < @consolidated_data[:mileage][0]
       @invoiced_car.save
       #si la voiture possède déjà un plan d'entretien, alors on matche les eventuelles lignes de factures qui correspondent à des lignes existantes.
       if @invoiced_car.maintenance_items.any?
+        puts "plan d'entretien retrouvé"
         @existing_items = @invoiced_car.maintenance_items
         @invoice_items = @consolidated_data[:maintenance_items]
         invoice_items_vs_plan_matching()
@@ -31,8 +34,11 @@ class ImageDataController < ApplicationController
         #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
         #sinon, on crée un nouvel intitulé
       #on créé les nouveaux items si besoinraise
+      else
+        puts "pas de plan d'entretien trouvé"
       end
     else
+      puts "=> voiture non retrouvée"
       flash[:notice] = "voiture non retrouvée, création de l'enregistrement"
       redirect_to new_car_from_picture_path(@imgdata)
     end
@@ -167,16 +173,27 @@ class ImageDataController < ApplicationController
         "- #{i}"
       end.join("\n")
     @item_matching_prompt = <<~PROMPT
-      app/helpers      associer items de la facture avec le nom des items existants du plan d'entretien si correspondants.\n
+      Associer chaque item de la facture avec les items existants du plan d'entretien.
+      - Si un item de la facture correspond (même partiellement, par synonymie ou variante orthographique)
+        à un item déjà listé, tu dois l'associer à cet item EXISTANT (et uniquement lui).
+      - N'utiliser la liste générique (vidange huile, filtre à air, filtre carburant, filtre habitacle,
+        etc.) QUE si aucun équivalent n'existe déjà dans "Déjà listés".
+      - Règle de priorité obligatoire :
+        1. Si un item de la facture correspond à un item déjà listé, même avec variation de formulation
+          (ex. pluriel/singulier, différence de mot mais même sens : "révisions constructeur" ≈ "Révision générale"),
+          alors il DOIT être associé à cet item existant.
+        2. Ce n’est que si aucun item similaire n’existe dans "Déjà listés" qu’il faut utiliser la liste générique.
+        3. Si vraiment aucun entretien n’est reconnu, renvoyer ["pas d'opération d'entretien"].
+
+      Réponse attendue : JSON => hash :
+      - associated_items : array d'array [item de la facture, item déjà listé]
+      - unassociated_items : array d'array [item de la facture, "" ou correspondance générique]
+      - si erreur, renvoyer ["erreur"].
+
+      Déjà listés:
       #{existing}
+      Dans la facture:
       #{in_invoice}
-      Réponse attendue : JSON => array de hash :
-      - associated_items : array d'array [item de la facture, item déja listé]
-      - unassociated_items: array d'array [item de la facture, "" ou correspondance dans liste: vidange huile; filtre à air; filtre carburant; filtre habitacle;
-      courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
-      révisions constructeur]
-      si aucun entretien détecté (ex: réparation ou équipement), renvoyer ["pas d'opération d'entretien"]
-      si erreur, renvoyer ["erreur"].
     PROMPT
   end
 
@@ -187,10 +204,11 @@ class ImageDataController < ApplicationController
     @response = client.ask(@item_matching_prompt)
     # raise
     #Answerformat to an array of hashes
-    @item_matching_array = JSON.parse(@response.content)
-    @imgdata.associated_items = @item_matching_array[0][associated_items]
-    @imgdata.unassociated_items = @item_matching_array[0][unassociated_items]
-    # raise
+    @item_matching_array = JSON.parse(@response.content).symbolize_keys
+    @imgdata.associated_items = @item_matching_array[:associated_items]
+    @imgdata.unassociated_items = @item_matching_array[:unassociated_items]
+    @imgdata.save
+    raise
   end
 
 private
