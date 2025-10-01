@@ -68,60 +68,69 @@ private
     @maintenance_item = MaintenanceItem.find(params[:id])
   end
 
-    def create_prompt
+  def create_prompt
     #JSON requis pour parser la réponse
     require 'json'
     #constitution du prompt
     #Listing des entretiens déja connus
-    if @car.maintenance_items.any? || @imgdata.unassociated_items.any?
-      in_plan = ""
-      in_invoice = ""
-      # Liste des entretiens déjà faits ou à prévoir
-      if @car.maintenance_items.any?
-        in_plan = "Déjà listés:\n" +
-          @car.maintenance_items.map do |i|
-            "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
-          end
-        .join("\n")
-      end
-      # Liste des entretiens dans la facture en cours d'intégration
-      if @imgdata.unassociated_items.any?
-        in_invoice = "Entretiens supplémentaires dans facture, à ajouter au plan:\n"+
-          @imgdata.unassociated_items.each do |item|
-            "- #{item[1]}"
-          end
-        .join("\n")
-      end
-      @maintenance_list = in_plan + in_invoice +
-      "\nListe les entretiens supplémentaires (non présents ci-dessus) si applicables :"
+    unassociated_items_presence = @imgdata.unassociated_items.any? if @imgdata
+    # Liste des entretiens déjà faits ou à prévoir
+    if @car.maintenance_items.any?
+      in_plan = "entretiens_existants:" +
+        @car.maintenance_items.each do |i|
+          "- #{i.item_name}\n"
+          # "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
+        end.join("\n")
+        + "- Les éléments listés dans entretiens_existants ne doivent JAMAIS apparaître ailleurs dans la réponse.\n"
     else
-      @maintenance_list = "Liste exhaustive des entretiens à prévoir :"
+      in_plan = "entretiens_existants: aucun\n"
     end
+    # Liste des entretiens dans la facture en cours d'intégration
+    if unassociated_items_presence
+      in_invoice = "entretiens_dans_facture:\n"+
+        @imgdata.unassociated_items.map do |item|
+          "- #{item[1]}"
+        end
+      .join("\n\n")
+    else
+      in_invoice = "entretiens_dans_facture : aucun.\n"
+    end
+    @maintenance_list = in_plan + in_invoice
 
     # Prompt
+    #AJOUTER LES ENTRETIENS EXISTANTS, ON LES DEGAGERA A LA CREATION
     @prompt = <<~PROMPT
+      "1/ CALCULER : A partir d'une liste d'entretiens existants et d'une liste d'entretiens présents dans une facture si donné, lister les nouveaux entretiens restants:
+
       Voiture #{@car.make} #{@car.model}, #{@car.energy}, #{@car.horsepower} ch,
       1ère immat: #{@car.first_registration_date}, #{@car.mileage} km, #{@car.mileage_per_year} km/an.
 
       #{@maintenance_list}
 
-      Inclure si applicable : vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      nouveaux_entretiens : règles :
+      - exemple [vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
-      révisions constructeur; autres opérations spécifiques modèle.
+      révisions constructeur]
+      - n'existent ni dans entretiens_dans_facture ni dans entretiens_existants, et ne sont pas similaires
+      - ! ssi applicable au modele moteur et energie de la voiture #{@car.make} #{@car.model}, #{@car.energy} !
+      - non exhaustif! inclure d'autres entretiens si besoin.
 
-      Réponse attendue : JSON -> array de hash :
+      2/ RESTITUER : uniquement nouveaux_entretiens et entretiens_dans_facture
+      Réponse attendue : JSON -> array de hash
       - item_name: string ≤ 30 caractères
       - one_shot_operation: true/false
       - to_do_every_x_km: nombre ou null
       - to_do_every_x_years: nombre ou null
+      - item_source : "nouveaux_entretiens" ou "entretiens_dans_facture"
 
-      Si erreur ou plus de nouveaux items, renvoyer [].
+
+      Si erreur ou liste vide , renvoyer [].
     PROMPT
   end
 
   def create_plan
     create_prompt()
-    raise
+    # raise
     #prompt to chatGPT
     client = RubyLLM::Chat.new
 
@@ -129,8 +138,8 @@ private
       # raise
 
     #Answerformat to an array of hashes
-    array = JSON.parse(@response.content)
-    raise
+    array = JSON.parse(@response.content.gsub("```JSON","JSON"))
+    # raise
     #For each line, create a new maintenance item in the PlanItem table
     array.each do |item|
       item.symbolize_keys!

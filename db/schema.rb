@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_22_135506) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_01_130349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,6 +96,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_22_135506) do
     t.datetime "updated_at", null: false
     t.text "associated_items", default: [], array: true
     t.text "unassociated_items", default: [], array: true
+    t.bigint "car_id"
+    t.bigint "garage_stop_id"
+    t.index ["car_id"], name: "index_image_data_on_car_id"
+    t.index ["garage_stop_id"], name: "index_image_data_on_garage_stop_id"
     t.index ["user_id"], name: "index_image_data_on_user_id"
   end
 
@@ -139,6 +143,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_22_135506) do
   add_foreign_key "cars", "users"
   add_foreign_key "garage_stops", "cars"
   add_foreign_key "garage_stops", "garages"
+  add_foreign_key "image_data", "cars"
+  add_foreign_key "image_data", "garage_stops"
   add_foreign_key "image_data", "users"
   add_foreign_key "maintenance_items", "cars"
   add_foreign_key "stop_items", "garage_stops"

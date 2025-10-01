@@ -71,6 +71,8 @@ class ImageDataController < ApplicationController
       - maintenance_items : array avec chaque opération d'entretien détectée en utilisant si applicables des titres generiques, tels que par exemple : vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur.
+      - price : number ou null
+      - date : date ou null
       si ce n'est pas une facture pour un véhicule, renvoyer ["facture non reconnue"]
       si erreur, renvoyer [].
     PROMPT
@@ -120,6 +122,8 @@ class ImageDataController < ApplicationController
       mileage: [],
       energy: [],
       maintenance_items: []
+      price: [],
+      date: [],
     }
     read_data.each do |page|
       page = page[0]
@@ -131,6 +135,8 @@ class ImageDataController < ApplicationController
         @consolidated_data[:mileage]          << page["mileage"] #unless page["mileage"] = "null"
         @consolidated_data[:energy]           << page["energy"] #unless page["energy"] = "null"
         @consolidated_data[:maintenance_items].concat(page["maintenance_items"])  if page["maintenance_items"]
+        @consolidated_data[:price]           << page["price"] #unless page["price"] = "null"
+        @consolidated_data[:date]           << page["date"] #unless page["date"] = "null"
       end
     end
   end
@@ -151,7 +157,9 @@ class ImageDataController < ApplicationController
       mileage: consolidated_data[:mileage],
       energy: consolidated_data[:energy],
       # maintenance_items: JSON.parse(consolidated_data[:maintenance_items]))
-      maintenance_items: consolidated_data[:maintenance_items])
+      maintenance_items: consolidated_data[:maintenance_items],
+      price: consolidated_data[:price],
+      date: consolidated_data[:date])
       @imgdata.save
       puts "Imagedata créée"
     else
@@ -165,7 +173,7 @@ class ImageDataController < ApplicationController
     # Liste des entretiens déjà existants
     existing = "Déjà listés:\n" +
       @existing_items.map do |i|
-        "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s)"
+        "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s), id = #{i.id}"
       end.join("\n")
     # Liste des entretiens identifiés dans la facture
     in_invoice = "Dans la facture:\n" +
@@ -186,8 +194,8 @@ class ImageDataController < ApplicationController
         3. Si vraiment aucun entretien n’est reconnu, renvoyer ["pas d'opération d'entretien"].
 
       Réponse attendue : JSON => hash :
-      - associated_items : array d'array [item de la facture, item déjà listé]
-      - unassociated_items : array d'array [item de la facture, "" ou correspondance générique]
+      - associated_items : array d'array [item de la facture, item déjà listé, id de l'item id]
+      - unassociated_items : array d'array [item de la facture, "" ou correspondance générique, ""]
       - si erreur, renvoyer ["erreur"].
 
       Déjà listés:
@@ -214,7 +222,7 @@ class ImageDataController < ApplicationController
 private
 
   def image_data_params()
-    params.require(:data).permit(:invoice_number, :number_plate, :make, :model, :energy, :mileage, :maintenance_items, photos: []  )
+    params.require(:data).permit(:invoice_number, :number_plate, :make, :model, :energy, :mileage, :maintenance_items, :price, :date, photos: []  )
   end
 
 end
