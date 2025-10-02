@@ -121,7 +121,7 @@ private
       - one_shot_operation: true/false
       - to_do_every_x_km: nombre ou null
       - to_do_every_x_years: nombre ou null
-      - item_source : "nouveaux_entretiens" ou "entretiens_dans_facture"
+      - item_source : "entretiens_existants" ou "nouveaux_entretiens" ou "entretiens_dans_facture"
 
 
       Si erreur ou liste vide , renvoyer [].
@@ -143,7 +143,7 @@ private
     #For each line, create a new maintenance item in the PlanItem table
     array.each do |item|
       item.symbolize_keys!
-      MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation])
+      MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation]) if item[:item_source] != "entretiens_existants"
     end
   end
 
