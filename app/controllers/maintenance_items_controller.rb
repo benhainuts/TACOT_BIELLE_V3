@@ -73,7 +73,10 @@ private
     require 'json'
     #constitution du prompt
     #Listing des entretiens déja connus
-    unassociated_items_presence = @imgdata.unassociated_items.any? if @imgdata
+    unassociated_items_presence = false
+    if @imgdata
+      unassociated_items_presence = @imgdata.unassociated_items.any?
+    end
     # Liste des entretiens déjà faits ou à prévoir
     if @car.maintenance_items.any?
       in_plan = "entretiens_existants:" +
@@ -91,9 +94,9 @@ private
         @imgdata.unassociated_items.map do |item|
           "- #{item[1]}"
         end
-      .join("\n\n")
+      .join("\n")
     else
-      in_invoice = "entretiens_dans_facture : aucun.\n"
+      in_invoice = "entretiens_dans_facture: aucun.\n"
     end
     @maintenance_list = in_plan + in_invoice
 
@@ -104,27 +107,29 @@ private
 
       Voiture #{@car.make} #{@car.model}, #{@car.energy}, #{@car.horsepower} ch,
       1ère immat: #{@car.first_registration_date}, #{@car.mileage} km, #{@car.mileage_per_year} km/an.
-
       #{@maintenance_list}
 
       nouveaux_entretiens : règles :
-      - exemple [vidange huile; filtre à air; filtre carburant; filtre habitacle;
-      courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
-      révisions constructeur]
-      - n'existent ni dans entretiens_dans_facture ni dans entretiens_existants, et ne sont pas similaires
-      - ! ssi applicable au modele moteur et energie de la voiture #{@car.make} #{@car.model}, #{@car.energy} !
-      - non exhaustif! inclure d'autres entretiens si besoin.
+      - si et seulement si applicable au modele moteur et energie de la voiture #{@car.make} #{@car.model}, #{@car.energy}
+      # - exemple [vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      # courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
+      # révisions constructeur]
+      - n'existent ni dans entretiens_dans_facture ni dans entretiens_existants, et ne se ressemblent pas
+      - non exhaustif! inclure d'autres entretiens si besoin
+      - NE PAS PRENDRE RISQUE DE REPETITION
 
-      2/ RESTITUER : uniquement nouveaux_entretiens et entretiens_dans_facture
-      Réponse attendue : JSON -> array de hash
+      2/ RESTITUER : JSON valide de la forme :
+        {
+          \"nouveaux_entretiens\": [...],
+          \"entretiens_dans_facture\": [...]
+        }"
       - item_name: string ≤ 30 caractères
       - one_shot_operation: true/false
       - to_do_every_x_km: nombre ou null
       - to_do_every_x_years: nombre ou null
-      - item_source : "entretiens_existants" ou "nouveaux_entretiens" ou "entretiens_dans_facture"
+      - item_source: nouveaux_entretiens ou entretiens_dans_facture
 
-
-      Si erreur ou liste vide , renvoyer [].
+      Si erreur ou liste vide, renvoyer [].
     PROMPT
   end
 
@@ -138,12 +143,17 @@ private
       # raise
 
     #Answerformat to an array of hashes
-    array = JSON.parse(@response.content.gsub("```JSON","JSON"))
+    hash = JSON.parse(@response.content.gsub("```JSON","JSON"))
+    to_add = hash["nouveaux_entretiens"].push(hash["entretiens_dans_facture"])
     # raise
     #For each line, create a new maintenance item in the PlanItem table
-    array.each do |item|
-      item.symbolize_keys!
-      MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation]) if item[:item_source] != "entretiens_existants"
+    to_add.each do |item|
+      if item != []
+        item.symbolize_keys!
+        if (item[:item_source] != "entretiens_existants" && MaintenanceItem.where("item_name like ?", "%#{item[:item_name]}%"))
+          MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation])
+        end
+      end
     end
   end
 
