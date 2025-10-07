@@ -15,6 +15,8 @@ class ImageDataController < ApplicationController
       flash[:notice] = "image analysée avec succès"
       puts "image analysée avec succès"
     end
+    #creation du stop
+
     #si plaque connue
     cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
     puts "CONTROLE DE L EXISTENCE DE LA VOITURE EN BASE"
@@ -28,15 +30,12 @@ class ImageDataController < ApplicationController
       if @invoiced_car.maintenance_items.any?
         puts "plan d'entretien retrouvé"
         @existing_items = @invoiced_car.maintenance_items
-        @invoice_items = @consolidated_data[:maintenance_items]
-        invoice_items_vs_plan_matching()
-        #on demande a chat gpt
-        #si les items peuvent etre associés a chaque ligne, on reprend l'intitulé
-        #sinon, on crée un nouvel intitulé
-      #on créé les nouveaux items si besoinraise
       else
         puts "pas de plan d'entretien trouvé"
+        @existing_items = []
       end
+      @invoice_items = @consolidated_data[:maintenance_items]
+      invoice_items_vs_plan_matching()
     else
       puts "=> voiture non retrouvée"
       flash[:notice] = "voiture non retrouvée, création de l'enregistrement"
@@ -121,9 +120,9 @@ class ImageDataController < ApplicationController
       model: [],
       mileage: [],
       energy: [],
-      maintenance_items: []
+      maintenance_items: [],
       price: [],
-      date: [],
+      date: []
     }
     read_data.each do |page|
       page = page[0]
@@ -150,16 +149,16 @@ class ImageDataController < ApplicationController
     if @imgdata = ImageDatum.new(
       # user: current_user,
       user_id: "1",
-      invoice_number: consolidated_data[:invoice_number],
-      number_plate: consolidated_data[:number_plate],
-      make: consolidated_data[:make],
-      model: consolidated_data[:model],
-      mileage: consolidated_data[:mileage],
-      energy: consolidated_data[:energy],
+      invoice_number: consolidated_data[:invoice_number][0],
+      number_plate: consolidated_data[:number_plate][0],
+      make: consolidated_data[:make][0],
+      model: consolidated_data[:model][0],
+      mileage: consolidated_data[:mileage][0],
+      energy: consolidated_data[:energy][0],
       # maintenance_items: JSON.parse(consolidated_data[:maintenance_items]))
       maintenance_items: consolidated_data[:maintenance_items],
-      price: consolidated_data[:price],
-      date: consolidated_data[:date])
+      price: consolidated_data[:price][0],
+      date: consolidated_data[:date][0])
       @imgdata.save
       puts "Imagedata créée"
     else
@@ -171,21 +170,25 @@ class ImageDataController < ApplicationController
     require 'json'
     #constitution du prompt
     # Liste des entretiens déjà existants
-    existing = "Déjà listés:\n" +
-      @existing_items.map do |i|
-        "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s), id = #{i.id}"
-      end.join("\n")
+    if @existing_items.any?
+      existing = "Pas d'entretien existant"
+    else
+      existing = "Déjà listés:\n" +
+        @existing_items.map do |i|
+          "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s), id = #{i.id}"
+        end.join("\n")
+      end
     # Liste des entretiens identifiés dans la facture
     in_invoice = "Dans la facture:\n" +
       @invoice_items.map do |i|
         "- #{i}"
       end.join("\n")
     @item_matching_prompt = <<~PROMPT
-      Associer chaque item de la facture avec les items existants du plan d'entretien.
+      Associer chaque item de la facture avec les items existants (s'il existent) du plan d'entretien
       - Si un item de la facture correspond (même partiellement, par synonymie ou variante orthographique)
         à un item déjà listé, tu dois l'associer à cet item EXISTANT (et uniquement lui).
       - N'utiliser la liste générique (vidange huile, filtre à air, filtre carburant, filtre habitacle,
-        etc.) QUE si aucun équivalent n'existe déjà dans "Déjà listés".
+        etc. NON EXHAUSTIF) QUE si aucun équivalent n'existe déjà dans "Déjà listés".
       - Règle de priorité obligatoire :
         1. Si un item de la facture correspond à un item déjà listé, même avec variation de formulation
           (ex. pluriel/singulier, différence de mot mais même sens : "révisions constructeur" ≈ "Révision générale"),
@@ -195,7 +198,7 @@ class ImageDataController < ApplicationController
 
       Réponse attendue : JSON => hash :
       - associated_items : array d'array [item de la facture, item déjà listé, id de l'item id]
-      - unassociated_items : array d'array [item de la facture, "" ou correspondance générique, ""]
+      - unassociated_items : array d'array [item de la facture, correspondance générique, ""]
       - si erreur, renvoyer ["erreur"].
 
       Déjà listés:

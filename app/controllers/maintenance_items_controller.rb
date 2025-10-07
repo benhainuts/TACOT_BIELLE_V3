@@ -47,7 +47,7 @@ class MaintenanceItemsController < ApplicationController
 
   def call_maintenance
     create_plan()
-    redirect_to maintenance_items_path(@car)
+    redirect_to new_maintenance_plan_from_picture_path(@imgdata,@car)
   end
 
 private

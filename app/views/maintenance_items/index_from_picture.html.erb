@@ -1,22 +1,14 @@
 hello from maintenance_items index with picture
 
-<%raise%>
-<p><%=link_to "nouveau" , new_car_maintenance_item_path%></p>
+<h1>Nous allons créer les entretiens suivants pour votre voiture :</h1>
 <p>voiture <%=@car.make%> <%=@car.model%> <%=@car.energy%></p>
 
-<%if @car.maintenance_items.empty?%>
-  <div>
-    <p>pas d'opération déclarée dans le plan d'entretien</p>
-    <%= link_to "créer le plan d'entretien", car_maintenance_items_call_maintenance_path(@car) %>
-  </div>
+<form action=<%=car_maintenance_items_path(@car)%> method="post">
+  <%@maintenance_items.each do |item|%>
+    <li>
+      <ul><input type="checkbox" id=<%=:item_name%>><%=item[:item_name]%> ; <%=item[item_source]%></ul>
+    </li>
+  <%end%>
 
-<%else%>
-  <%= link_to "mettre à jour le plan d'entretien", car_maintenance_items_call_maintenance_path(@car) %>
-  <ul>
-    <%i = 0%>
-    <%@car.maintenance_items.each do |item|%>
-      <li><%=i%> - <%=link_to item.item_name , car_maintenance_item_path(@car, item)%></li>
-      <% i = i+1%>
-    <%end%>
-  </ul>
-<%end%>
+  <%raise%>
+</form>
