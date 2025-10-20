@@ -7,10 +7,10 @@ class MaintenanceItemsController < ApplicationController
     @maintenance_items = @car.maintenance_items
   end
 
-  def index_from_picture
+  def index_from_picture()
     set_image_data()
-    @maintenance_items = @car.maintenance_items
     create_prompt()
+    @maintenance_items = @car.maintenance_items
   end
 
   def show
@@ -47,7 +47,11 @@ class MaintenanceItemsController < ApplicationController
 
   def call_maintenance
     create_plan()
-    redirect_to new_maintenance_plan_from_picture_path(@imgdata,@car)
+    if @imgdata
+      redirect_to new_maintenance_plan_from_picture_path(@imgdata,@car)
+    else
+      redirect_to car_maintenance_items_path(@car)
+    end
   end
 
 private
@@ -147,11 +151,21 @@ private
     to_add = hash["nouveaux_entretiens"].push(hash["entretiens_dans_facture"])
     # raise
     #For each line, create a new maintenance item in the PlanItem table
-    to_add.each do |item|
+    hash["nouveaux_entretiens"].each do |item|
       if item != []
         item.symbolize_keys!
         if (item[:item_source] != "entretiens_existants" && MaintenanceItem.where("item_name like ?", "%#{item[:item_name]}%"))
           MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation])
+        end
+      end
+    end
+    hash["entretiens_dans_facture"].each do |item|
+      if item != []
+        item.symbolize_keys!
+        if (item[:item_source] != "entretiens_existants" && MaintenanceItem.where("item_name like ?", "%#{item[:item_name]}%"))
+          newitem = MaintenanceItem.create(car_id: @car.id, item_name: item[:item_name], to_do_every_x_km: item[:to_do_every_x_km], to_do_every_x_years: item[:to_do_every_x_years], one_shot_operation: item[:one_shot_operation])
+          @imgdata[:unassociated_items].find{|i| i[1] == "i4"}[3] = newitem.id
+          @imgdata.save
         end
       end
     end

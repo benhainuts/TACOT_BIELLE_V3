@@ -4,11 +4,17 @@ hello from maintenance_items index with picture
 <p>voiture <%=@car.make%> <%=@car.model%> <%=@car.energy%></p>
 
 <form action=<%=car_maintenance_items_path(@car)%> method="post">
-  <%@maintenance_items.each do |item|%>
-    <li>
-      <ul><input type="checkbox" id=<%=:item_name%>><%=item[:item_name]%> ; <%=item[item_source]%></ul>
-    </li>
-  <%end%>
+  <%=@imgdata.maintenance_items%>
 
-  <%raise%>
+  <%=@imgdata.unassociated_items%>
+
+  <%=@prompt%>
+
+  <%=@consolidated_data%>
+    <%# <li>
+      <%# <ul><input type="checkbox" id=<%=:item_name%>><%#item[:item_name]%>
+    <%# </li> %>
+
+
+
 </form>

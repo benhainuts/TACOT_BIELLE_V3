@@ -39,6 +39,8 @@ class ImageDataController < ApplicationController
     else
       puts "=> voiture non retrouvée"
       flash[:notice] = "voiture non retrouvée, création de l'enregistrement"
+      #nécessaire quand meme pour les items
+      invoice_items_vs_plan_matching()
       redirect_to new_car_from_picture_path(@imgdata)
     end
     # raise
@@ -67,7 +69,7 @@ class ImageDataController < ApplicationController
       - model: modèle : string ≤ 30 caractères ou null
       - mileage : kilométrage : number ou null
       - energy : carburant : string ≤ 30 caractères ou null
-      - maintenance_items : array avec chaque opération d'entretien détectée en utilisant si applicables des titres generiques, tels que par exemple : vidange huile; filtre à air; filtre carburant; filtre habitacle;
+      - maintenance_items : array de hash avec clé commençant par "i1", en incrémentant, avec chaque opération d'entretien détectée en utilisant si applicables des titres generiques, tels que par exemple : vidange huile; filtre à air; filtre carburant; filtre habitacle;
       courroie distribution; liquide frein; liquide refroidissement; pneus; embrayage; amortisseurs;
       révisions constructeur.
       - price : number ou null
@@ -170,18 +172,18 @@ class ImageDataController < ApplicationController
     require 'json'
     #constitution du prompt
     # Liste des entretiens déjà existants
-    if @existing_items.any?
+    if !@existing_items.any?
       existing = "Pas d'entretien existant"
     else
-      existing = "Déjà listés:\n" +
+      existing = "Déjà_listés:\n" +
         @existing_items.map do |i|
-          "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s), id = #{i.id}"
+          "- #{i.item_name}, tous les #{i.to_do_every_x_km} km ou #{i.to_do_every_x_years} an(s), id_plan = #{i.id}"
         end.join("\n")
       end
     # Liste des entretiens identifiés dans la facture
-    in_invoice = "Dans la facture:\n" +
+    in_invoice = "Dans_la_facture:\n" +
       @invoice_items.map do |i|
-        "- #{i}"
+        "- #{i.values[0]}, id_invoice = #{i.keys[0]} "
       end.join("\n")
     @item_matching_prompt = <<~PROMPT
       Associer chaque item de la facture avec les items existants (s'il existent) du plan d'entretien
@@ -197,8 +199,8 @@ class ImageDataController < ApplicationController
         3. Si vraiment aucun entretien n’est reconnu, renvoyer ["pas d'opération d'entretien"].
 
       Réponse attendue : JSON => hash :
-      - associated_items : array d'array [item de la facture, item déjà listé, id de l'item id]
-      - unassociated_items : array d'array [item de la facture, correspondance générique, ""]
+      - associated_items : array d'array [item dans_la_facture, id_invoice , item déjà_listé, id_plan]
+      - unassociated_items : array d'array [item_dans_la_facture, id_invoice, correspondance générique, ""]
       - si erreur, renvoyer ["erreur"].
 
       Déjà listés:
@@ -219,7 +221,7 @@ class ImageDataController < ApplicationController
     @imgdata.associated_items = @item_matching_array[:associated_items]
     @imgdata.unassociated_items = @item_matching_array[:unassociated_items]
     @imgdata.save
-    raise
+    # raise
   end
 
 private
