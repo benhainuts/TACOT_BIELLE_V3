@@ -1,5 +1,5 @@
 class ImageDataController < ApplicationController
-
+before_action :set_image_data, only: [:show]
   def picture_analysis
     # params.require(:data.permit(:photos)
   end
@@ -10,13 +10,12 @@ class ImageDataController < ApplicationController
     if @consolidated_data[:number_plate].count > 1
       flash[:alert] = "Il y a plus de deux voitures sur l'analyse, veuillez recommencer"
       puts "erreur, les factures concernent plusieurs voitures"
-      redirect_to  new_picture_analysis_path(), status: :unprocessable_entity
+      redirect_to  new_picture_analysis_path()
     else
       flash[:notice] = "image analysée avec succès"
       puts "image analysée avec succès"
     end
     #creation du stop
-
     #si plaque connue
     cleaned_plate = @consolidated_data[:number_plate][0].strip.delete("-,_")
     puts "CONTROLE DE L EXISTENCE DE LA VOITURE EN BASE"
@@ -39,7 +38,8 @@ class ImageDataController < ApplicationController
     else
       puts "=> voiture non retrouvée"
       flash[:notice] = "voiture non retrouvée, création de l'enregistrement"
-      #nécessaire quand meme pour les items
+      #construction de l'item matching NE PAS REPRENDRE LA FCT CHAT GPT
+      @existing_items = []
       invoice_items_vs_plan_matching()
       redirect_to new_car_from_picture_path(@imgdata)
     end
@@ -135,7 +135,7 @@ class ImageDataController < ApplicationController
         @consolidated_data[:model]            << page["model"] #unless page["model"] = "null"
         @consolidated_data[:mileage]          << page["mileage"] #unless page["mileage"] = "null"
         @consolidated_data[:energy]           << page["energy"] #unless page["energy"] = "null"
-        @consolidated_data[:maintenance_items].concat(page["maintenance_items"])  if page["maintenance_items"]
+        @consolidated_data[:maintenance_items].concat(page["maintenance_items"].to_a)  if page["maintenance_items"]
         @consolidated_data[:price]           << page["price"] #unless page["price"] = "null"
         @consolidated_data[:date]           << page["date"] #unless page["date"] = "null"
       end
@@ -173,7 +173,7 @@ class ImageDataController < ApplicationController
     #constitution du prompt
     # Liste des entretiens déjà existants
     if !@existing_items.any?
-      existing = "Pas d'entretien existant"
+        existing = "Pas d'entretien existant"
     else
       existing = "Déjà_listés:\n" +
         @existing_items.map do |i|
@@ -228,6 +228,10 @@ private
 
   def image_data_params()
     params.require(:data).permit(:invoice_number, :number_plate, :make, :model, :energy, :mileage, :maintenance_items, :price, :date, photos: []  )
+  end
+
+  def set_image_data()
+    @imgdata = ImageDatum.find(params[:image_datum_id])
   end
 
 end
