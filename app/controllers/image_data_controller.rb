@@ -1,12 +1,14 @@
 class ImageDataController < ApplicationController
-before_action :set_image_data, only: [:show]
+before_action :set_image_data, only: [:show, :invoice_review]
   def picture_analysis
     # params.require(:data.permit(:photos)
   end
 
 
   def invoice_review
-    images_reading_request()
+    # images_reading_request()
+    images_data_analysis_and_formatting(@imgdata.raw_input)
+    consolidated_data_undoubling(@consolidated_data)
     if @consolidated_data[:number_plate].count > 1
       flash[:alert] = "Il y a plus de deux voitures sur l'analyse, veuillez recommencer"
       puts "erreur, les factures concernent plusieurs voitures"
@@ -110,8 +112,14 @@ before_action :set_image_data, only: [:show]
       @read_data << @response
       puts "Image #{i} on #{pagesnb} analyzed."
     end
-    images_data_analysis_and_formatting(@read_data)
-    consolidated_data_undoubling(@consolidated_data)
+    # images_data_analysis_and_formatting(@read_data)
+    # consolidated_data_undoubling(@consolidated_data)
+    @imgdata = ImageDatum.new(raw_input: @read_data, user_id: 1)
+    if @imgdata.save
+      redirect_to image_data_path(@imgdata)
+    else
+      render :picture_analysis, status: :unprocessable_entity
+    end
   end
 
   def images_data_analysis_and_formatting(read_data)
