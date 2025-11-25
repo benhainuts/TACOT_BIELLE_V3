@@ -4,8 +4,13 @@ before_action :set_image_data, only: [:show, :invoice_review]
     # params.require(:data.permit(:photos)
   end
 
+  def show
 
-  def invoice_review
+  end
+
+
+  def invoice_review()
+    # raise
     # images_reading_request()
     images_data_analysis_and_formatting(@imgdata.raw_input)
     consolidated_data_undoubling(@consolidated_data)
@@ -114,8 +119,9 @@ before_action :set_image_data, only: [:show, :invoice_review]
     end
     # images_data_analysis_and_formatting(@read_data)
     # consolidated_data_undoubling(@consolidated_data)
-    @imgdata = ImageDatum.new(raw_input: @read_data, user_id: 1)
+    @imgdata = ImageDatum.new(raw_input: @read_data, has_been_reviewed: false, user_id: 1)
     if @imgdata.save
+      raise
       redirect_to image_data_path(@imgdata)
     else
       render :picture_analysis, status: :unprocessable_entity
@@ -155,10 +161,9 @@ before_action :set_image_data, only: [:show, :invoice_review]
     consolidated_data.each  do |item_array|
       item_array.uniq!
     end
-    puts "Image Data en creation"
-    if @imgdata = ImageDatum.new(
+    puts "Image Data mise a jour"
+    if @imgdata.update(
       # user: current_user,
-      user_id: "1",
       invoice_number: consolidated_data[:invoice_number][0],
       number_plate: consolidated_data[:number_plate][0],
       make: consolidated_data[:make][0],
@@ -168,11 +173,12 @@ before_action :set_image_data, only: [:show, :invoice_review]
       # maintenance_items: JSON.parse(consolidated_data[:maintenance_items]))
       maintenance_items: consolidated_data[:maintenance_items],
       price: consolidated_data[:price][0],
-      date: consolidated_data[:date][0])
+      date: consolidated_data[:date][0],
+      has_been_reviewed: true)
       @imgdata.save
-      puts "Imagedata créée"
+      puts "Imagedata mise a jour"
     else
-      puts "Echec de la creation de l'image_data"
+      puts "Echec de mise a jour de l'image_data"
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_24_153226) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_25_130501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,7 +100,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_153226) do
     t.bigint "garage_stop_id"
     t.decimal "price"
     t.date "date"
-    t.text "raw_input"
+    t.text "raw_input", default: [], array: true
+    t.boolean "has_been_reviewed", default: false
     t.index ["car_id"], name: "index_image_data_on_car_id"
     t.index ["garage_stop_id"], name: "index_image_data_on_garage_stop_id"
     t.index ["user_id"], name: "index_image_data_on_user_id"
