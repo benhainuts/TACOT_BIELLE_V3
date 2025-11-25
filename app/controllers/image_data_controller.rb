@@ -12,6 +12,7 @@ before_action :set_image_data, only: [:show, :invoice_review]
   def invoice_review()
     # raise
     # images_reading_request()
+    require 'json'
     images_data_analysis_and_formatting(@imgdata.raw_input)
     consolidated_data_undoubling(@consolidated_data)
     if @consolidated_data[:number_plate].count > 1
@@ -65,8 +66,6 @@ before_action :set_image_data, only: [:show, :invoice_review]
   end
 
   def image_reading_prompt()
-    #JSON requis pour parser la réponse
-    require 'json'
     return <<~PROMPT
       app/helpers      Facture ou devis de réparation de véhicule.
       Réponse attendue : JSON => array de hash :
@@ -89,11 +88,14 @@ before_action :set_image_data, only: [:show, :invoice_review]
   def image_reading_chatgpt(image)
     # client = OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
     # base64_image = Base64.encode64(image.read)
+    #JSON requis pour parser la réponse
+    require 'json'
     chat = RubyLLM.chat(model: 'gpt-4o') # vision-capable model
     prompt = image_reading_prompt()
     request = chat.ask image_reading_prompt(), with: { image: image }
     @raw = request.content
-    @response = JSON.parse(@raw.gsub(/```json|```/, "").strip)
+    # @response = JSON.parse(@raw.gsub(/```json|```/, "").strip)
+    @response = @raw.gsub(/```json|```/, "").strip
   end
 
   def images_reading_request()
@@ -129,6 +131,7 @@ before_action :set_image_data, only: [:show, :invoice_review]
   end
 
   def images_data_analysis_and_formatting(read_data)
+    require 'json'
     @consolidated_data = {
       invoice_number: [],
       number_plate: [],
@@ -141,8 +144,9 @@ before_action :set_image_data, only: [:show, :invoice_review]
       date: []
     }
     read_data.each do |page|
-      page = page[0]
+      page = JSON.parse(page)[0]
       unless page == "facture non reconnue"
+        # page = page.symbolize_keys
         @consolidated_data[:invoice_number]   << page["invoice_number"] #unless page["invoice_number"] = "null"
         @consolidated_data[:number_plate]     << page["number_plate"] #unless page["number_plate"] = "null"
         @consolidated_data[:make]             << page["make"] #unless page["make"] = "null"
