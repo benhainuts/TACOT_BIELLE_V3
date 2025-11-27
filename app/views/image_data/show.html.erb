@@ -1,0 +1,29 @@
+<h1>Image n° <%=@imgdata.id%></h1>
+
+  <%# <form action=<%=new_invoice_review_path%> method="post" enctype="multipart/form-data">charger photos %>
+    invoice nbr : <%= @imgdata.invoice_number%> <br>
+    number plate : <%= @imgdata.number_plate%> <br>
+    make : <%= @imgdata.make%> <br>
+    model : <%= @imgdata.model%> <br>
+    mileage : <%= @imgdata.mileage%> <br>
+    energy : <%= @imgdata.energy%> <br>
+    maintenance items : <%= @imgdata.maintenance_items%> <br>
+    created at : <%= @imgdata.created_at%> <br>
+    updated at : <%= @imgdata.updated_at%> <br>
+    associated items <%= @imgdata.associated_items%> <br>
+    unassociated items <%= @imgdata.unassociated_items%> <br>
+    car_id <%= @imgdata.car_id%> <br>
+    garage_stop_id : <%= @imgdata.garage_stop_id%> <br>
+    price : <%= @imgdata.price%> <br>
+    date : <%= @imgdata.date%> <br>
+    has_been_reviwed : <%= @imgdata.has_been_reviewed%> <br>
+    raw_input : <%= @imgdata.raw_input%> <br>
+    <%# <label for="raw_input">entréé brute</label>
+    <%# <input type="text" name="garage_stop[car_id]" id="raw_input" value="<%= @imgdata.raw_input% %>
+
+    <%# <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>
+    <%# <input type="submit" value="Analyser la facture" %>
+  <%# </form> %>
+  <%= button_to "Analyser la facture #{@imgdata.id}",
+              invoice_review_path(@imgdata),
+              method: :post %>

@@ -60,6 +60,11 @@ Rails.application.routes.draw do
   delete "garages/:id", to: "garages#destroy"
 
   get "picture_analysis", to: "image_data#picture_analysis", as: "new_picture_analysis"
-  post "invoice_review", to: "image_data#invoice_review", as: "new_invoice_review"
+  get "image_data/:image_datum_id", to: "image_data#show", as: "image_data"
+  get "image_data/:image_datum_id/new_car", to: "cars#new_from_picture", as: "new_car_from_picture"
+  post "image_data/:image_datum_id/car", to: "cars#create_from_picture", as: "create_car_from_picture"
+  get "image_data/:image_datum_id/car/:car_id/new_maintenance_items", to: "maintenance_items#index_from_picture", as: "new_maintenance_plan_from_picture"
+  post "images_reading_request", to: "image_data#images_reading_request", as: "new_images_reading_request"
+  post "image_data/:image_datum_id/invoice_review", to: "image_data#invoice_review", as: "invoice_review"
 
 end

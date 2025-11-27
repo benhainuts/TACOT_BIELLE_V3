@@ -10,15 +10,37 @@ before_action :set_car, only: [:show, :edit, :update]
     @car = Car.new
   end
 
+  def new_from_picture
+    set_image_data()
+    @car = Car.new
+    @car.number_plate = @imgdata.number_plate
+    @car.make = @imgdata.make
+    @car.model = @imgdata.model
+    @car.mileage = @imgdata.mileage
+    @car.energy = @imgdata.energy
+  end
+
   def create
     # puts car_params.inspect
-
     @car = Car.new(car_params)
     # @car.use = params[:car][:use].to_s
     # raise
     if @car.save
       # raise
-      redirect_to cars_path
+      redirect_to cars_path()
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def create_from_picture
+    set_image_data()
+    @car = Car.new(car_params)
+    # @car.use = params[:car][:use].to_s
+    # raise
+    if @car.save
+      # raise
+      redirect_to new_maintenance_plan_from_picture_path(@imgdata,@car)
     else
       render :new, status: :unprocessable_entity
     end
@@ -47,6 +69,10 @@ before_action :set_car, only: [:show, :edit, :update]
 
   def set_car
     @car = Car.find(params[:id])
+  end
+
+  def set_image_data
+    @imgdata=ImageDatum.find(params[:image_datum_id])
   end
 
   def car_params

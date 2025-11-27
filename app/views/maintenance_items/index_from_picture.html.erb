@@ -1,0 +1,20 @@
+hello from maintenance_items index with picture
+
+<h1>Nous allons créer les entretiens suivants pour votre voiture :</h1>
+<p>voiture <%=@car.make%> <%=@car.model%> <%=@car.energy%></p>
+
+<form action=<%=car_maintenance_items_path(@car)%> method="post">
+  <%=@imgdata.maintenance_items%>
+
+  <%=@imgdata.unassociated_items%>
+
+  <%=@prompt%>
+
+  <%=@consolidated_data%>
+    <%# <li>
+      <%# <ul><input type="checkbox" id=<%=:item_name%>><%#item[:item_name]%>
+    <%# </li> %>
+
+
+
+</form>

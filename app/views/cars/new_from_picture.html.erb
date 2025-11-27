@@ -1,0 +1,9 @@
+<h1>Cars#new_from_picture</h1>
+<p>Find me in app/views/cars/new.html.erb</p>
+
+
+<%= render partial: 'form', locals: {
+  car: @car,
+  form_action: create_car_from_picture_path(@imgdata),
+  form_method: "post"
+} %>

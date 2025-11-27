@@ -14,8 +14,8 @@ class Car < ApplicationRecord
   # validates , presence: true
   # validates :model, presence: true
 
-  has_many :garage_stops
-  has_many :maintenance_items
+  has_many :garage_stops, :dependent => :destroy
+  has_many :maintenance_items, :dependent => :destroy
 
   ENERGIE = [
   { id: "essence",          label: "Essence" },
