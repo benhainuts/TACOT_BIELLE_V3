@@ -1,0 +1,2 @@
+module Wizard::InvoiceReadHelper
+end
